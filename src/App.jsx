@@ -1,18 +1,119 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useTransform, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useTransform, useAnimation, useScroll } from 'framer-motion';
 import { 
   Home, Compass, Key, Building, Heart, GitCompare, MessageSquare, 
   MoreHorizontal, Search, Bell, SlidersHorizontal, PlayCircle, Map,
   Bed, Square, MapPin, X, Sparkles, Check, Car, Bath, Maximize, Layers,
-  Trash2, XCircle, Mic, Send, ArrowLeft
+  Trash2, XCircle, Mic, Send, ArrowLeft, Shield, Wifi, Coffee, Users,
+  Phone, Mail, Calendar, Info, Star, Share2, ExternalLink
 } from 'lucide-react';
 
 const PROPS = [
-  { id:1, title:'Skyline Residences', loc:'Baner, Pune', price:'₹1.45 Cr', priceSub:'3 BHK · 1680 sq.ft', type:'buy', bhk:3, sqft:1680, img:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', tags:['featured'], amenities:['Furnished','Parking','Lift','Security'], desc:'Spacious 3 BHK with modern amenities, beautiful city view and prime location. Perfect for families and working professionals.', yield: 4.5 },
-  { id:2, title:'Urban Nest', loc:'Wakad, Pune', price:'₹22,000', priceSub:'/ mo', type:'rent', bhk:2, sqft:956, img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80', tags:['new'], amenities:['Furnished','Parking','Security'], desc:'Modern 2 BHK apartment with contemporary design, excellent connectivity, and world-class facilities in a prime Wakad location.', yield: 6.2 },
-  { id:3, title:'The Horizon Villas', loc:'Kothrud, Pune', price:'₹2.75 Cr', priceSub:'4 BHK · 3200 sq.ft', type:'buy', bhk:4, sqft:3200, img:'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80', tags:['premium'], amenities:['Garden','Parking','Security','Gym'], desc:'Luxurious villa offering expansive living spaces, private garden, and unparalleled privacy in the heart of Kothrud.', yield: 3.8 },
-  { id:4, title:'Greenview Heights', loc:'Hinjewadi, Pune', price:'₹30,000', priceSub:'/ mo', type:'rent', bhk:3, sqft:1100, img:'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80', tags:['hot'], amenities:['Pool','Gym','Parking'], desc:'Premium rental near IT parks with dedicated workspace, and smart home features. The ultimate urban lifestyle.', yield: 5.6 },
-  { id:5, title:'Pearl Apartments', loc:'Kothrud, Pune', price:'₹45 L', priceSub:'1 BHK · 650 sq.ft', type:'buy', bhk:1, sqft:650, img:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', tags:[], amenities:['Parking','Security'], desc:'Affordable and cozy 1 BHK in the heart of Kothrud. Walking distance to SNDT College and D-Mart.', yield: 4.2 },
+  { 
+    id:1, 
+    title:'Skyline Residences', 
+    loc:'Baner, Pune', 
+    price:'₹1.45 Cr', 
+    priceSub:'3 BHK · 1680 sq.ft', 
+    type:'buy', 
+    bhk:3, 
+    sqft:1680, 
+    img:'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', 
+    gallery: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80'
+    ],
+    tags:['featured'], 
+    amenities:['Furnished','Parking','Lift','Security', 'Swimming Pool', 'Gym', 'Clubhouse'], 
+    desc:'Spacious 3 BHK with modern amenities, beautiful city view and prime location. Perfect for families and working professionals.', 
+    yield: 4.5,
+    agent: { name: 'Sarah Kapoor', phone: '+91 98765 43210', img: 'https://i.pravatar.cc/100?img=44' },
+    features: ['Vastu Compliant', 'Sea View', 'Corner Unit', 'High Floor']
+  },
+  { 
+    id:2, 
+    title:'Urban Nest', 
+    loc:'Wakad, Pune', 
+    price:'₹22,000', 
+    priceSub:'/ mo', 
+    type:'rent', 
+    bhk:2, 
+    sqft:956, 
+    img:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80', 
+    gallery: [
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&q=80'
+    ],
+    tags:['new'], 
+    amenities:['Furnished','Parking','Security', 'CCTV', 'Power Backup'], 
+    desc:'Modern 2 BHK apartment with contemporary design, excellent connectivity, and world-class facilities in a prime Wakad location.', 
+    yield: 6.2,
+    agent: { name: 'Rahul Mehra', phone: '+91 98765 00000', img: 'https://i.pravatar.cc/100?img=12' },
+    features: ['Pet Friendly', 'Balcony', 'Modular Kitchen']
+  },
+  { 
+    id:3, 
+    title:'The Horizon Villas', 
+    loc:'Kothrud, Pune', 
+    price:'₹2.75 Cr', 
+    priceSub:'4 BHK · 3200 sq.ft', 
+    type:'buy', 
+    bhk:4, 
+    sqft:3200, 
+    img:'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80', 
+    gallery: [
+      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+    ],
+    tags:['premium'], 
+    amenities:['Garden','Parking','Security','Gym', 'Private Pool', 'Home Theater'], 
+    desc:'Luxurious villa offering expansive living spaces, private garden, and unparalleled privacy in the heart of Kothrud.', 
+    yield: 3.8,
+    agent: { name: 'Anita Desai', phone: '+91 99999 88888', img: 'https://i.pravatar.cc/100?img=25' },
+    features: ['Private Garden', 'Duplex', 'Solar Power']
+  },
+  { 
+    id:4, 
+    title:'Greenview Heights', 
+    loc:'Hinjewadi, Pune', 
+    price:'₹30,000', 
+    priceSub:'/ mo', 
+    type:'rent', 
+    bhk:3, 
+    sqft:1100, 
+    img:'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80', 
+    gallery: [
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+    ],
+    tags:['hot'], 
+    amenities:['Pool','Gym','Parking', 'Clubhouse', 'Play Area'], 
+    desc:'Premium rental near IT parks with dedicated workspace, and smart home features. The ultimate urban lifestyle.', 
+    yield: 5.6,
+    agent: { name: 'Vikram Singh', phone: '+91 98888 77777', img: 'https://i.pravatar.cc/100?img=11' },
+    features: ['Near IT Park', 'Smart Home', '24/7 Water']
+  },
+  { 
+    id:5, 
+    title:'Pearl Apartments', 
+    loc:'Kothrud, Pune', 
+    price:'₹45 L', 
+    priceSub:'1 BHK · 650 sq.ft', 
+    type:'buy', 
+    bhk:1, 
+    sqft:650, 
+    img:'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', 
+    gallery: [
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80'
+    ],
+    tags:[], 
+    amenities:['Parking','Security'], 
+    desc:'Affordable and cozy 1 BHK in the heart of Kothrud. Walking distance to SNDT College and D-Mart.', 
+    yield: 4.2,
+    agent: { name: 'Priya Sharma', phone: '+91 97777 66666', img: 'https://i.pravatar.cc/100?img=32' },
+    features: ['Low Maintenance', 'Prime Location']
+  },
   { id:6, title:'Serene Retreat', loc:'Ravet, Pune', price:'₹50 L', priceSub:'2 BHK · 820 sq.ft', type:'buy', bhk:2, sqft:820, img:'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&q=80', tags:['new'], amenities:['Garden','Security'], desc:'Beautifully designed compact homes away from the city noise.', yield: 5.3 },
   { id:7, title:'Tech Park Suites', loc:'Kharadi, Pune', price:'₹90 L', priceSub:'2 BHK · 1000 sq.ft', type:'buy', bhk:2, sqft:1000, img:'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80', tags:['hot'], amenities:['Gym','Pool','Security'], desc:'Premium homes right next to EON IT Park.', yield: 5.4 },
   { id:8, title:'Lakeview Apartments', loc:'Moshi, Pune', price:'₹49 L', priceSub:'1 BHK · 680 sq.ft', type:'buy', bhk:1, sqft:680, img:'https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=800&q=80', tags:[], amenities:['Parking','Security'], desc:'Quiet lakeview apartments with modern styling.', yield: 4.8 },
@@ -119,7 +220,7 @@ function Sidebar({ activeTab, setActiveTab, savedCount }) {
   );
 }
 
-function TopHeader() {
+function TopHeader({ searchQuery, onSearchChange }) {
   return (
     <div className="top-header">
       <div className="mobile-brand">
@@ -134,7 +235,20 @@ function TopHeader() {
       </div>
       <div className="search-bar">
         <Search size={18} color="var(--text3)" />
-        <input className="search-input" placeholder="Search location..." />
+        <input 
+          className="search-input" 
+          placeholder="Search location..." 
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+        />
+        {searchQuery && (
+          <X 
+            size={18} 
+            color="var(--text3)" 
+            style={{ cursor: 'pointer' }} 
+            onClick={() => onSearchChange('')} 
+          />
+        )}
         <SlidersHorizontal size={18} color="var(--gold)" style={{ cursor: 'pointer' }} />
       </div>
       <div className="header-actions">
@@ -149,12 +263,27 @@ function TopHeader() {
 }
 
 // --- SHARED COMPONENTS ---
-function PropertyCard({ p, wide = false, onClick, yieldBadge = false, isSaved = false, onSaveToggle }) {
+function PropertyCard({ p, wide = false, onClick, yieldBadge = false, savedIds = [], onSaveToggle }) {
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const isSaved = savedIds.includes(p.id);
+  
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({ x, y });
+  };
+
   return (
     <motion.div 
       className={`prop-card ${wide ? 'prop-card-wide' : ''}`}
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -10 }}
       onClick={onClick}
+      onMouseMove={handleMouseMove}
+      style={{
+        '--mouse-x': `${mousePos.x}%`,
+        '--mouse-y': `${mousePos.y}%`
+      }}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -193,13 +322,41 @@ function PropertyCard({ p, wide = false, onClick, yieldBadge = false, isSaved = 
 function PropertyRow({ title, properties, onSelect, yieldBadge = false, savedIds, onSaveToggle }) {
   return (
     <div style={{ marginBottom: '40px' }}>
-      <div className="row-header" style={{ padding: '0 4px' }}>
+      <motion.div 
+        className="row-header" 
+        style={{ padding: '0 4px' }}
+        initial={{ opacity: 0, x: -20 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
+      >
         <div className="row-title">{title}</div>
         <button className="row-view-all">View all</button>
-      </div>
+      </motion.div>
       <div className="row-scroll">
         {properties.map((p, i) => (
-          <PropertyCard key={p.id} p={p} wide={true} onClick={() => onSelect(p)} yieldBadge={yieldBadge} isSaved={savedIds.includes(p.id)} onSaveToggle={onSaveToggle} />
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ 
+              duration: 0.5, 
+              delay: i * 0.1,
+              type: 'spring',
+              stiffness: 100,
+              damping: 15
+            }}
+          >
+            <PropertyCard 
+              p={p} 
+              wide={true} 
+              onClick={() => onSelect(p)} 
+              yieldBadge={yieldBadge} 
+              savedIds={savedIds} 
+              onSaveToggle={onSaveToggle} 
+            />
+          </motion.div>
         ))}
       </div>
     </div>
@@ -208,96 +365,348 @@ function PropertyRow({ title, properties, onSelect, yieldBadge = false, savedIds
 
 // --- PAGE COMPONENTS ---
 
-function HomePage({ onSwipeOpen, onSelect, savedIds, onSaveToggle }) {
+function HomePage({ onSwipeOpen, onSelect, savedIds, onSaveToggle, searchQuery, onSearchChange }) {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: 'spring', damping: 25, stiffness: 120 }
+    }
+  };
+
+  const searchResults = PROPS.filter(p => 
+    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    p.loc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
     >
-      <div className="hero-banner">
-        <img className="hero-img" src="https://images.unsplash.com/photo-1613490908575-9e6e165b4c1d?auto=format&fit=crop&w=1600&q=80" alt="Luxury Home" />
-        <div className="hero-overlay"></div>
-        <div className="hero-content">
-          <h1 className="hero-title">Find Your<br/><span>Perfect Space</span></h1>
-          <p className="hero-desc">Premium properties. Trusted guidance.<br/>Better investments.</p>
-          <div className="hero-buttons">
-            <button className="btn-primary">Explore Properties</button>
-            <button className="btn-ghost" onClick={onSwipeOpen} style={{ borderColor: 'var(--gold)', color: 'var(--gold)' }}>
-              <Layers size={18} /> Swipe Rentals
-            </button>
+      {searchQuery ? (
+        <motion.div variants={itemVariants} style={{ padding: '20px 0' }}>
+          <div className="page-header">
+            <h1 className="page-title">Search Results for "{searchQuery}"</h1>
+            <p style={{ color: 'var(--text2)', fontSize: '14px' }}>Found {searchResults.length} properties</p>
           </div>
-        </div>
-      </div>
-      
-      <PropertyRow title="Top Picks For You" properties={PROPS.slice(0, 4)} onSelect={onSelect} savedIds={savedIds} onSaveToggle={onSaveToggle} />
-      <PropertyRow title="Under ₹50 Lakh" properties={PROPS.filter(p => p.price.includes('L') && parseInt(p.price.replace('₹','').replace(' L','')) <= 50)} onSelect={onSelect} savedIds={savedIds} onSaveToggle={onSaveToggle} />
-      <PropertyRow title="High Rental Yield Properties" properties={[...PROPS].sort((a,b) => b.yield - a.yield).slice(0, 4)} onSelect={onSelect} yieldBadge={true} savedIds={savedIds} onSaveToggle={onSaveToggle} />
-      <PropertyRow title="New This Week" properties={PROPS.filter(p => p.tags.includes('new') || p.tags.includes('hot'))} onSelect={onSelect} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+          <div className="saved-grid">
+            {searchResults.map(p => (
+              <PropertyCard key={p.id} p={p} onClick={() => onSelect(p)} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+            ))}
+          </div>
+          {searchResults.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text2)' }}>
+              <Search size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+              <p style={{ fontSize: '18px', color: 'var(--text)' }}>No properties match your search.</p>
+              <p style={{ marginTop: '8px' }}>Try searching for a different location or property type.</p>
+              
+              <div style={{ marginTop: '32px' }}>
+                <p style={{ fontSize: '13px', marginBottom: '16px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Popular Searches</p>
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  {['Baner', 'Kharadi', 'Koregaon Park', '3 BHK', 'Under 50L'].map(term => (
+                    <button 
+                      key={term}
+                      className="filter-pill"
+                      onClick={() => onSearchChange(term)}
+                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      ) : (
+        <>
+          <motion.div className="hero-banner" variants={itemVariants}>
+            <motion.img 
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="hero-img" 
+              src="https://images.unsplash.com/photo-1613490908575-9e6e165b4c1d?auto=format&fit=crop&w=1600&q=80" 
+              alt="Luxury Home" 
+            />
+            <div className="hero-overlay"></div>
+            <div className="hero-content">
+              <motion.h1 
+                className="hero-title"
+                initial={{ y: 30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.8 }}
+              >
+                { "Find Your".split("").map((char, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + i * 0.03, duration: 0.5 }}
+                  >
+                    {char}
+                  </motion.span>
+                )) }
+                <br/>
+                <span>
+                  { "Perfect Space".split("").map((char, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, scale: 1.2 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8 + i * 0.03, duration: 0.5 }}
+                    >
+                      {char}
+                    </motion.span>
+                  )) }
+                </span>
+              </motion.h1>
+              <motion.p 
+                className="hero-desc"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+              >
+                Premium properties. Trusted guidance.<br/>Better investments.
+              </motion.p>
+              <motion.div 
+                className="hero-buttons"
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.8 }}
+              >
+                <button className="btn-primary">Explore Properties</button>
+                <button className="btn-ghost" onClick={onSwipeOpen} style={{ borderColor: 'var(--gold)', color: 'var(--gold)' }}>
+                  <Layers size={18} /> Swipe Rentals
+                </button>
+              </motion.div>
+            </div>
+          </motion.div>
+          
+          <motion.div variants={itemVariants}>
+            <PropertyRow title="Top Picks For You" properties={PROPS.slice(0, 4)} onSelect={onSelect} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <PropertyRow title="Under ₹50 Lakh" properties={PROPS.filter(p => p.price.includes('L') && parseInt(p.price.replace('₹','').replace(' L','')) <= 50)} onSelect={onSelect} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <PropertyRow title="High Rental Yield" properties={[...PROPS].sort((a,b) => b.yield - a.yield).slice(0, 4)} onSelect={onSelect} yieldBadge={true} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <PropertyRow title="New This Week" properties={PROPS.filter(p => p.tags.includes('new') || p.tags.includes('hot'))} onSelect={onSelect} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+          </motion.div>
+        </>
+      )}
     </motion.div>
   );
 }
 
-function ExplorePage({ onSelect, savedIds, onSaveToggle }) {
+function ExplorePage({ onSelect, savedIds, onSaveToggle, searchQuery }) {
+  const [type, setType] = useState('rent');
+  const [selectedLocations, setSelectedLocations] = useState([]);
+  const [selectedBhk, setSelectedBhk] = useState([]);
+  const [maxBudget, setMaxBudget] = useState(type === 'rent' ? 100000 : 50000000);
+  const [showAllLocations, setShowAllLocations] = useState(false);
+  const [viewMode, setViewMode] = useState('split'); // 'split', 'map', 'list'
+  const [hoveredPropId, setHoveredPropId] = useState(null);
+  
+  useEffect(() => {
+    setMaxBudget(type === 'rent' ? 100000 : 50000000);
+  }, [type]);
+   
+  const locations = Array.from(new Set(PROPS.map(p => p.loc.split(',')[0].trim())));
+  const bhkOptions = [1, 2, 3, 4];
+ 
+  const filteredProps = PROPS.filter(p => {
+    const locMatch = selectedLocations.length === 0 || selectedLocations.some(l => p.loc.includes(l));
+    const bhkMatch = selectedBhk.length === 0 || selectedBhk.includes(p.bhk);
+    const typeMatch = p.type === type;
+    const searchMatch = !searchQuery || 
+      p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      p.loc.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Robust budget check
+    const parsePrice = (priceStr) => {
+      if (!priceStr) return 0;
+      // Handle ranges like "60K - 1.2L" - take the lower bound for filtering or maybe the upper?
+      // Usually users want to see if it fits their budget, so we check if the minimum fits.
+      const firstPart = priceStr.split('-')[0].trim();
+      let val = parseFloat(firstPart.replace(/[₹,]/g, ''));
+      
+      if (firstPart.includes('Cr')) val *= 10000000;
+      else if (firstPart.includes('Lac') || firstPart.includes('L')) val *= 100000;
+      else if (firstPart.includes('K')) val *= 1000;
+      
+      return val;
+    };
+
+    const priceVal = parsePrice(p.price);
+    const budgetMatch = priceVal <= maxBudget;
+
+    return locMatch && bhkMatch && typeMatch && searchMatch && budgetMatch;
+  });
+
+  const toggleLocation = (loc) => {
+    setSelectedLocations(prev => 
+      prev.includes(loc) ? prev.filter(l => l !== loc) : [...prev, loc]
+    );
+  };
+
+  const toggleBhk = (bhk) => {
+    setSelectedBhk(prev => 
+      prev.includes(bhk) ? prev.filter(b => b !== bhk) : [...prev, bhk]
+    );
+  };
+
+  const displayLocations = showAllLocations ? locations : locations.slice(0, 5);
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
       <div className="page-header">
         <h1 className="page-title">Explore</h1>
-        <div className="tabs-pill">
-          <div className="tab-pill active">Rent</div>
-          <div className="tab-pill">Buy</div>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+          <div className="mobile-only" style={{ background: 'var(--bg2)', padding: '4px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+            <button 
+              onClick={() => setViewMode('list')}
+              style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: viewMode === 'list' ? 'var(--surface)' : 'transparent', color: viewMode === 'list' ? 'var(--gold)' : 'var(--text2)', cursor: 'pointer' }}
+            >
+              List
+            </button>
+            <button 
+              onClick={() => setViewMode('map')}
+              style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: viewMode === 'map' ? 'var(--surface)' : 'transparent', color: viewMode === 'map' ? 'var(--gold)' : 'var(--text2)', cursor: 'pointer' }}
+            >
+              Map
+            </button>
+          </div>
+          <div className="tabs-pill">
+            <div className={`tab-pill ${type === 'rent' ? 'active' : ''}`} onClick={() => setType('rent')}>Rent</div>
+            <div className={`tab-pill ${type === 'buy' ? 'active' : ''}`} onClick={() => setType('buy')}>Buy</div>
+          </div>
         </div>
       </div>
 
-      <div className="explore-layout">
-        <div className="explore-filters">
+      <div className={`explore-layout ${viewMode}`}>
+        <div className={`explore-filters ${viewMode === 'map' ? 'mobile-hidden' : ''}`}>
           <div className="filter-section">
             <div className="filter-title">Locations</div>
             <div className="filter-pills">
-              <div className="filter-pill active">Baner</div>
-              <div className="filter-pill">Wakad</div>
-              <div className="filter-pill active">Hinjewadi</div>
-              <div className="filter-pill">Kothrud</div>
-              <div className="filter-pill">More</div>
+              {displayLocations.map(loc => (
+                <div 
+                  key={loc} 
+                  className={`filter-pill ${selectedLocations.includes(loc) ? 'active' : ''}`}
+                  onClick={() => toggleLocation(loc)}
+                >
+                  {loc}
+                </div>
+              ))}
+              {!showAllLocations && locations.length > 5 && (
+                <div className="filter-pill" onClick={() => setShowAllLocations(true)}>+{locations.length - 5} More</div>
+              )}
+              {showAllLocations && (
+                <div className="filter-pill" onClick={() => setShowAllLocations(false)}>Show Less</div>
+              )}
             </div>
           </div>
           <div className="filter-section">
-            <div className="filter-title">Budget</div>
+            <div className="filter-title">Budget (Max: ₹{maxBudget >= 10000000 ? `${(maxBudget/10000000).toFixed(1)} Cr` : maxBudget >= 100000 ? `${(maxBudget/100000).toFixed(1)} L` : `${(maxBudget/1000).toFixed(0)} K`})</div>
             <div style={{ padding: '10px 0' }}>
-              <div style={{ height: '4px', background: 'var(--border)', borderRadius: '2px', position: 'relative' }}>
-                <div style={{ position: 'absolute', left: '20%', right: '40%', height: '100%', background: 'var(--gold)', borderRadius: '2px' }}></div>
-                <div style={{ position: 'absolute', left: '20%', top: '50%', transform: 'translate(-50%, -50%)', width: '16px', height: '16px', background: 'var(--text)', borderRadius: '50%', border: '2px solid var(--gold)' }}></div>
-                <div style={{ position: 'absolute', right: '40%', top: '50%', transform: 'translate(50%, -50%)', width: '16px', height: '16px', background: 'var(--text)', borderRadius: '50%', border: '2px solid var(--gold)' }}></div>
-              </div>
+              <input 
+                type="range" 
+                min={type === 'rent' ? 5000 : 1000000} 
+                max={type === 'rent' ? 300000 : 100000000} 
+                step={type === 'rent' ? 5000 : 1000000}
+                value={maxBudget}
+                onChange={(e) => setMaxBudget(parseInt(e.target.value))}
+                style={{ width: '100%', accentColor: 'var(--gold)', cursor: 'pointer' }}
+              />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '13px', color: 'var(--text2)' }}>
-                <span>₹20k</span>
-                <span>₹60k+</span>
+                <span>{type === 'rent' ? '₹5k' : '₹10 L'}</span>
+                <span>{type === 'rent' ? '₹3 L+' : '₹10 Cr+'}</span>
               </div>
             </div>
           </div>
           <div className="filter-section">
             <div className="filter-title">BHK</div>
             <div className="filter-pills">
-              <div className="filter-pill">1 BHK</div>
-              <div className="filter-pill active">2 BHK</div>
-              <div className="filter-pill">3 BHK</div>
-              <div className="filter-pill">4+ BHK</div>
+              {bhkOptions.map(bhk => (
+                <div 
+                  key={bhk} 
+                  className={`filter-pill ${selectedBhk.includes(bhk) ? 'active' : ''}`}
+                  onClick={() => toggleBhk(bhk)}
+                >
+                  {bhk} BHK
+                </div>
+              ))}
             </div>
           </div>
-          <button className="btn-primary" style={{ width: '100%', marginTop: '16px' }}>Show 120 Properties</button>
+          
+          <div className="mobile-only" style={{ marginTop: '24px' }}>
+            <h3 style={{ fontSize: '18px', marginBottom: '16px' }}>{filteredProps.length} Results Found</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {filteredProps.map(p => (
+                <PropertyCard key={p.id} p={p} onClick={() => onSelect(p)} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="explore-map">
+        <div className={`explore-map ${viewMode === 'list' ? 'mobile-hidden' : ''}`}>
           <div className="explore-map-overlay"></div>
           {/* Map Pins */}
-          <div className="map-pin" style={{ top: '30%', left: '40%' }}>₹28K</div>
-          <div className="map-pin" style={{ top: '50%', left: '60%' }}>₹22K</div>
-          <div className="map-pin" style={{ top: '70%', left: '30%' }}>₹18K</div>
-          <div className="map-pin" style={{ top: '20%', left: '70%' }}>₹45K</div>
+          {filteredProps.slice(0, 10).map((p, i) => (
+            <div 
+              key={p.id} 
+              className={`map-pin ${hoveredPropId === p.id ? 'active' : ''}`} 
+              onMouseEnter={() => setHoveredPropId(p.id)}
+              onMouseLeave={() => setHoveredPropId(null)}
+              onClick={() => onSelect(p)}
+              style={{ 
+                top: `${20 + (i * 12) % 60}%`, 
+                left: `${20 + (i * 18) % 60}%`,
+                zIndex: hoveredPropId === p.id ? 100 : 1
+              }}
+            >
+              <div className="pin-price">{p.price.split(' ')[0]}</div>
+              {hoveredPropId === p.id && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.9 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  className="pin-popup"
+                >
+                  <img src={p.img} alt={p.title} />
+                  <div className="pin-popup-info">
+                    <div className="pin-popup-title">{p.title}</div>
+                    <div className="pin-popup-loc">{p.loc}</div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          ))}
           
-          <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px' }}>
-            <PropertyCard p={PROPS[0]} wide={false} onClick={() => onSelect(PROPS[0])} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+          <div style={{ position: 'absolute', bottom: '24px', left: '24px', right: '24px' }} className="desktop-only">
+            {filteredProps.length > 0 ? (
+              <PropertyCard p={hoveredPropId ? filteredProps.find(p=>p.id===hoveredPropId) : filteredProps[0]} wide={false} onClick={() => onSelect(hoveredPropId ? filteredProps.find(p=>p.id===hoveredPropId) : filteredProps[0])} savedIds={savedIds} onSaveToggle={onSaveToggle} />
+            ) : (
+              <div style={{ background: 'var(--bg2)', padding: '20px', borderRadius: '16px', textAlign: 'center', color: 'var(--text2)' }}>
+                No properties found for these filters.
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -307,27 +716,39 @@ function ExplorePage({ onSelect, savedIds, onSaveToggle }) {
 
 function SavedPage({ savedIds, onSelect, onSaveToggle }) {
   const savedProps = PROPS.filter(p => savedIds.includes(p.id));
+  const [filter, setFilter] = useState('all');
+  
+  const filteredSaved = filter === 'all' 
+    ? savedProps 
+    : savedProps.filter(p => p.type === filter);
   
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="page-container">
       <div className="page-header">
-        <h1 className="page-title">Saved Properties</h1>
+        <h1 className="page-title">Saved Collection</h1>
         <div className="tabs-pill">
-          <div className="tab-pill active">Rentals ({savedProps.filter(p=>p.type==='rent').length})</div>
-          <div className="tab-pill">Projects ({savedProps.filter(p=>p.type==='buy').length})</div>
+          <div className={`tab-pill ${filter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')}>All ({savedProps.length})</div>
+          <div className={`tab-pill ${filter === 'rent' ? 'active' : ''}`} onClick={() => setFilter('rent')}>Rentals ({savedProps.filter(p=>p.type==='rent').length})</div>
+          <div className={`tab-pill ${filter === 'buy' ? 'active' : ''}`} onClick={() => setFilter('buy')}>Buy ({savedProps.filter(p=>p.type==='buy').length})</div>
         </div>
       </div>
 
-      {savedProps.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text2)' }}>
-          <Heart size={64} style={{ opacity: 0.2, margin: '0 auto 20px' }} />
-          <p>You haven't saved any properties yet.</p>
-          <p style={{ fontSize: '13px', marginTop: '8px' }}>Swipe right on properties or tap the heart icon to save them here.</p>
+      {filteredSaved.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: '100px 20px', background: 'var(--bg2)', borderRadius: '24px', border: '1px solid var(--border)' }}>
+          <Heart size={48} color="var(--border)" style={{ marginBottom: '16px' }} />
+          <h2 style={{ fontSize: '24px', color: 'var(--text1)', marginBottom: '12px' }}>
+            {savedProps.length === 0 ? 'Your collection is empty' : `No ${filter} properties saved`}
+          </h2>
+          <p style={{ color: 'var(--text3)', maxWidth: '400px', margin: '0 auto' }}>
+            {savedProps.length === 0 
+              ? 'Start exploring luxury properties and save your favorites to view them later in one place.'
+              : `You haven't saved any properties for ${filter} yet.`}
+          </p>
         </div>
       ) : (
-        <div className="saved-grid">
-          {savedProps.map(p => (
-            <PropertyCard key={p.id} p={p} onClick={() => onSelect(p)} isSaved={true} onSaveToggle={onSaveToggle} />
+        <div className="props-grid">
+          {filteredSaved.map(p => (
+            <PropertyCard key={p.id} p={p} onClick={() => onSelect(p)} savedIds={savedIds} onSaveToggle={onSaveToggle} />
           ))}
         </div>
       )}
@@ -335,57 +756,74 @@ function SavedPage({ savedIds, onSelect, onSaveToggle }) {
   );
 }
 
-function ComparePage({ savedIds }) {
+function ComparePage({ savedIds, onSelect, onSaveToggle }) {
   const compareProps = PROPS.filter(p => savedIds.includes(p.id)).slice(0, 3);
   
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="page-container">
       <div className="page-header">
         <h1 className="page-title">Compare Properties</h1>
-        <button className="btn-ghost"><Trash2 size={16}/> Clear All</button>
+        <div style={{ color: 'var(--text3)', fontSize: '15px' }}>{compareProps.length} of 3 spots filled</div>
       </div>
 
       {compareProps.length < 2 ? (
-        <div style={{ textAlign: 'center', padding: '100px 0', color: 'var(--text2)' }}>
-          <GitCompare size={64} style={{ opacity: 0.2, margin: '0 auto 20px' }} />
-          <p>Save at least 2 properties to compare them side-by-side.</p>
+        <div style={{ textAlign: 'center', padding: '100px 20px', background: 'var(--bg2)', borderRadius: '24px', border: '1px solid var(--border)' }}>
+          <GitCompare size={48} color="var(--border)" style={{ marginBottom: '16px' }} />
+          <h2 style={{ fontSize: '24px', color: 'var(--text1)', marginBottom: '12px' }}>Add more properties</h2>
+          <p style={{ color: 'var(--text3)', maxWidth: '400px', margin: '0 auto' }}>
+            Save at least 2 properties to compare their features, amenities, and pricing side-by-side.
+          </p>
         </div>
       ) : (
         <div className="compare-container">
           <div className="compare-header">
-            <div>
-              <div style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '8px' }}>Properties Selected</div>
-              <div style={{ fontSize: '24px', color: 'var(--gold)' }}>{compareProps.length}</div>
+            <div className="compare-label-col">
+              <div style={{ fontSize: '13px', color: 'var(--text3)', textTransform: 'uppercase', letterSpacing: '1px' }}>Comparison</div>
+              <div style={{ fontSize: '20px', fontWeight: 600, marginTop: '8px' }}>Key Metrics</div>
             </div>
             {compareProps.map(p => (
-              <div key={p.id} style={{ position: 'relative' }}>
-                <button style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(0,0,0,0.5)', border: 'none', color: 'white', borderRadius: '50%', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}>×</button>
-                <img src={p.img} alt={p.title} style={{ width: '100%', height: '140px', objectFit: 'cover', borderRadius: '16px', marginBottom: '12px' }} />
-                <div style={{ fontWeight: 500, fontSize: '16px', marginBottom: '4px' }}>{p.title}</div>
-                <div style={{ color: 'var(--gold)', fontWeight: 600 }}>{p.price}</div>
+              <div key={p.id} className="compare-prop-card">
+                <button 
+                  className="compare-remove"
+                  onClick={(e) => { e.stopPropagation(); onSaveToggle(p.id); }}
+                >
+                  <X size={14} />
+                </button>
+                <img src={p.img} alt={p.title} onClick={() => onSelect(p)} />
+                <div className="compare-prop-info">
+                  <div className="compare-prop-title">{p.title}</div>
+                  <div className="compare-prop-price">{p.price}</div>
+                </div>
               </div>
             ))}
           </div>
           
-          <div className="compare-row">
-            <div className="compare-label">Location</div>
-            {compareProps.map(p => <div key={p.id} className="compare-val">{p.loc}</div>)}
-          </div>
-          <div className="compare-row">
-            <div className="compare-label">Configuration</div>
-            {compareProps.map(p => <div key={p.id} className="compare-val highlight">{p.bhk} BHK</div>)}
-          </div>
-          <div className="compare-row">
-            <div className="compare-label">Size</div>
-            {compareProps.map(p => <div key={p.id} className="compare-val">{p.sqft} sq.ft</div>)}
-          </div>
-          <div className="compare-row">
-            <div className="compare-label">Furnished</div>
-            {compareProps.map(p => <div key={p.id} className="compare-val">{p.amenities.includes('Furnished') ? 'Yes' : 'Semi'}</div>)}
-          </div>
-          <div className="compare-row">
-            <div className="compare-label">Parking</div>
-            {compareProps.map(p => <div key={p.id} className="compare-val">{p.amenities.includes('Parking') ? '1 Covered' : 'No'}</div>)}
+          <div className="compare-rows">
+            <div className="compare-row">
+              <div className="compare-label">Location</div>
+              {compareProps.map(p => <div key={p.id} className="compare-val">{p.loc}</div>)}
+            </div>
+            <div className="compare-row">
+              <div className="compare-label">Configuration</div>
+              {compareProps.map(p => <div key={p.id} className="compare-val highlight">{p.bhk} BHK</div>)}
+            </div>
+            <div className="compare-row">
+              <div className="compare-label">Size</div>
+              {compareProps.map(p => <div key={p.id} className="compare-val">{p.sqft} sq.ft</div>)}
+            </div>
+            <div className="compare-row">
+              <div className="compare-label">Type</div>
+              {compareProps.map(p => <div key={p.id} className="compare-val" style={{ textTransform: 'capitalize' }}>{p.type}</div>)}
+            </div>
+            <div className="compare-row">
+              <div className="compare-label">Amenities</div>
+              {compareProps.map(p => (
+                <div key={p.id} className="compare-val amenities">
+                  {p.amenities.slice(0, 3).join(', ')}
+                  {p.amenities.length > 3 && ` +${p.amenities.length - 3}`}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -393,54 +831,94 @@ function ComparePage({ savedIds }) {
   );
 }
 
-function ChatPage() {
+function ChatPage({ onSearch }) {
+  const [messages, setMessages] = useState([
+    { id: 1, type: 'bot', text: "Hi! I'm your AI property assistant. How can I help you find your dream home today?" }
+  ]);
+  const [input, setInput] = useState('');
+
+  const handleSend = (text = input) => {
+    if (!text.trim()) return;
+    
+    const newMsg = { id: Date.now(), type: 'user', text };
+    setMessages(prev => [...prev, newMsg]);
+    setInput('');
+
+    // Simple mock logic
+    setTimeout(() => {
+      let botResponse = "I'm searching for that. Would you like to see our latest listings in that category?";
+      const lowerText = text.toLowerCase();
+      
+      if (lowerText.includes('rent') || lowerText.includes('bhk') || lowerText.includes('under')) {
+        botResponse = "I've found several great rental options matching your criteria. Check the Explore page for the updated results!";
+        if (onSearch) onSearch(text);
+      } else if (lowerText.includes('buy') || lowerText.includes('project')) {
+        botResponse = "New luxury projects are coming up! I've filtered the best ones for you on the Explore page.";
+        if (onSearch) onSearch(text);
+      }
+
+      setMessages(prev => [...prev, { id: Date.now() + 1, type: 'bot', text: botResponse }]);
+    }, 800);
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="chat-wrapper">
       <div className="chat-header">
-        <Sparkles size={24} color="var(--gold)" />
-        <div>
-          <div style={{ fontSize: '18px', fontWeight: 500 }}>AI Assistant</div>
-          <div style={{ fontSize: '13px', color: 'var(--green)' }}>Online</div>
-        </div>
-      </div>
-      
-      <div className="chat-messages">
-        <div className="msg-bot">
-          <div className="msg-avatar"><Sparkles size={18}/></div>
-          <div className="msg-bubble">
-            Hi Rohan 👋<br/><br/>
-            How can I help you find your perfect property today?
-            
-            <div className="chat-suggestions">
-              <button className="chat-sugg-btn">
-                <Search size={16} className="chat-sugg-icon"/>
-                Show me 2 BHK in Baner under ₹30,000
-              </button>
-              <button className="chat-sugg-btn">
-                <Building size={16} className="chat-sugg-icon"/>
-                Find projects near Hinjewadi
-              </button>
-              <button className="chat-sugg-btn">
-                <Key size={16} className="chat-sugg-icon"/>
-                Best rental properties for investment
-              </button>
-              <button className="chat-sugg-btn">
-                <GitCompare size={16} className="chat-sugg-icon"/>
-                Compare my saved properties
-              </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', background: 'rgba(201,168,76,0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Sparkles size={20} color="var(--gold)" />
+          </div>
+          <div>
+            <div style={{ fontSize: '16px', fontWeight: 600 }}>Umbrella AI</div>
+            <div style={{ fontSize: '12px', color: 'var(--green)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <div style={{ width: '6px', height: '6px', background: 'var(--green)', borderRadius: '50%' }}></div>
+              Always Online
             </div>
           </div>
         </div>
       </div>
       
-      <div className="chat-input-area">
-        <div className="chat-input-box">
-          <input className="chat-input" placeholder="Type your message or ask anything..." />
-          <Mic size={20} color="var(--text3)" style={{ cursor: 'pointer', marginRight: '16px' }} />
-          <div style={{ background: 'var(--gold)', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <Send size={16} color="#000" style={{ marginLeft: '-2px' }} />
+      <div className="chat-messages">
+        {messages.map(m => (
+          <div key={m.id} className={m.type === 'bot' ? 'msg-bot' : 'msg-user'}>
+            {m.type === 'bot' && <div className="msg-avatar"><Sparkles size={16}/></div>}
+            <div className="msg-bubble">
+              {m.text}
+              {m.id === 1 && (
+                <div className="chat-suggestions">
+                  {[
+                    { label: "2 BHK under 30k", icon: Search },
+                    { label: "Projects in Baner", icon: Building },
+                    { label: "Luxury villas for sale", icon: Key },
+                    { label: "Compare my saved", icon: GitCompare }
+                  ].map((s, idx) => (
+                    <button key={idx} className="chat-sugg-btn" onClick={() => handleSend(s.label)}>
+                      <s.icon size={14} className="chat-sugg-icon"/>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ))}
+      </div>
+      
+      <div className="chat-input-area">
+        <form className="chat-input-box" onSubmit={(e) => { e.preventDefault(); handleSend(); }}>
+          <input 
+            className="chat-input" 
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask about properties, locations, or pricing..." 
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <Mic size={20} color="var(--text3)" style={{ cursor: 'pointer' }} />
+            <button type="submit" style={{ background: 'var(--gold)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              <Send size={16} color="#000" style={{ marginLeft: '-2px' }} />
+            </button>
+          </div>
+        </form>
       </div>
     </motion.div>
   );
@@ -579,85 +1057,316 @@ function MatchScreen({ property, onContinue }) {
   );
 }
 
-function DetailPage({ property, onBack }) {
+function DetailPage({ property, onBack, savedIds, onSaveToggle }) {
+  const [activeImg, setActiveImg] = useState(0);
+  const { scrollY } = useScroll();
+  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
+  const isSaved = savedIds.includes(property.id);
+
   useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const gallery = property.gallery || [property.img];
+
+  const nextImg = () => setActiveImg(prev => (prev + 1) % gallery.length);
+  const prevImg = () => setActiveImg(prev => (prev - 1 + gallery.length) % gallery.length);
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: 20 }} 
-      animate={{ opacity: 1, x: 0 }} 
-      exit={{ opacity: 0, x: 20 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 50 }} 
+      animate={{ opacity: 1, y: 0 }} 
+      exit={{ opacity: 0, y: 50 }}
+      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
       style={{ 
         position: 'fixed', 
         inset: 0, 
         background: 'var(--bg)', 
-        zIndex: 1000, 
+        zIndex: 2000, 
         overflowY: 'auto',
-        willChange: 'transform, opacity'
+        WebkitOverflowScrolling: 'touch'
       }}
     >
-      <div style={{ position: 'fixed', top: 16, left: 16, zIndex: 1110 }}>
-        <button className="swipe-close" onClick={onBack} style={{ width: '40px', height: '40px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', color: 'white', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {/* Header Actions */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: '80px', background: 'linear-gradient(to bottom, rgba(0,0,0,0.5), transparent)', zIndex: 2100, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', pointerEvents: 'none' }}>
+        <button className="swipe-close" onClick={onBack} style={{ pointerEvents: 'auto', width: '44px', height: '44px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)', color: 'white', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}>
           <ArrowLeft size={20} />
         </button>
-      </div>
-      
-      <div style={{ height: '45vh', position: 'relative' }}>
-        <img src={property.img} alt={property.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg) 0%, transparent 60%)' }}></div>
-      </div>
-      
-      <div className="detail-content" style={{ padding: '0 24px', maxWidth: '1200px', margin: '-40px auto 0', position: 'relative', zIndex: 10 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg2)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <div style={{ display: 'inline-block', padding: '4px 10px', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', borderRadius: '6px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '12px' }}>{property.type === 'rent' ? 'For Rent' : 'For Sale'}</div>
-              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '32px', marginBottom: '8px', lineHeight: 1.1 }}>{property.title}</h1>
-              <div style={{ color: 'var(--text2)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <MapPin size={16} /> {property.loc}
-              </div>
-            </div>
-          </div>
-          <div style={{ borderTop: '1px solid var(--border2)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: '28px', color: 'var(--gold)', fontWeight: 600, fontFamily: "'Cormorant Garamond', serif" }}>{property.price}</div>
-              <div style={{ color: 'var(--text2)', fontSize: '13px' }}>{property.priceSub}</div>
-            </div>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.bhk}</div>
-                <div style={{ color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase' }}>BHK</div>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.sqft}</div>
-                <div style={{ color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase' }}>Sq.Ft</div>
-              </div>
-            </div>
-          </div>
+        <div style={{ display: 'flex', gap: '12px', pointerEvents: 'auto' }}>
+          <button style={{ width: '44px', height: '44px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)', color: 'white', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Share2 size={20} />
+          </button>
+          <button 
+            onClick={(e) => { e.stopPropagation(); onSaveToggle(property.id); }}
+            style={{ width: '44px', height: '44px', background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(20px)', color: isSaved ? 'var(--gold)' : 'white', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }}
+          >
+            <Heart size={20} fill={isSaved ? "var(--gold)" : "none"} />
+          </button>
         </div>
+      </div>
+
+      {/* Hero Gallery */}
+      <div style={{ height: '65vh', position: 'relative', overflow: 'hidden' }}>
+        <AnimatePresence mode="wait">
+          <motion.img 
+            key={activeImg}
+            src={gallery[activeImg]} 
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              objectFit: 'cover',
+              y: y1
+            }} 
+            transition={{ duration: 0.6 }}
+          />
+        </AnimatePresence>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg) 0%, transparent 40%, rgba(0,0,0,0.3) 100%)' }}></div>
         
-        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }}>
-          <div>
-            <h3 style={{ fontSize: '18px', color: 'var(--text)', marginBottom: '16px', borderBottom: '1px solid var(--border2)', paddingBottom: '8px' }}>Property Overview</h3>
-            <p style={{ color: 'var(--text2)', lineHeight: 1.6, marginBottom: '32px', fontSize: '14px' }}>
-              {property.desc} Enjoy high-end fittings, ample natural light, and access to premium society amenities.
-            </p>
-            <h3 style={{ fontSize: '18px', color: 'var(--text)', marginBottom: '16px', borderBottom: '1px solid var(--border2)', paddingBottom: '8px' }}>Amenities</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
-              {property.amenities.map(a => <div key={a} style={{ background: 'var(--bg3)', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', border: '1px solid var(--border)' }}>{a}</div>)}
-            </div>
+        {/* Gallery Navigation Arrows */}
+        <div className="desktop-only" style={{ position: 'absolute', top: '50%', left: '20px', right: '20px', transform: 'translateY(-50%)', display: 'flex', justifyContent: 'space-between', pointerEvents: 'none' }}>
+          <button onClick={prevImg} style={{ pointerEvents: 'auto', width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(0,0,0,0.3)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(10px)' }}>
+            <ArrowLeft size={24} />
+          </button>
+          <button onClick={nextImg} style={{ pointerEvents: 'auto', width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(0,0,0,0.3)', color: 'white', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', backdropFilter: 'blur(10px)' }}>
+            <ArrowRight size={24} />
+          </button>
+        </div>
+
+        {/* Gallery Thumbnails */}
+        {gallery.length > 1 && (
+          <div style={{ position: 'absolute', bottom: '40px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '10px', padding: '10px', background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(15px)', borderRadius: '20px', border: '1px solid rgba(255,255,255,0.1)' }}>
+            {gallery.map((img, idx) => (
+              <div 
+                key={idx} 
+                onClick={() => setActiveImg(idx)}
+                style={{ 
+                  width: '60px', 
+                  height: '60px', 
+                  borderRadius: '12px', 
+                  overflow: 'hidden', 
+                  border: activeImg === idx ? '2px solid var(--gold)' : '2px solid transparent',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  opacity: activeImg === idx ? 1 : 0.6
+                }}
+              >
+                <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
+            ))}
           </div>
-          
-          <div style={{ paddingBottom: '40px' }}>
-            <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', padding: '24px', borderRadius: '24px' }}>
-              <h4 style={{ fontSize: '16px', marginBottom: '20px', textAlign: 'center' }}>Interested in this property?</h4>
-              <button className="btn-primary" style={{ width: '100%', marginBottom: '12px', padding: '16px', borderRadius: '12px' }}>Schedule a Visit</button>
-              <button className="btn-ghost" style={{ width: '100%', justifyContent: 'center', padding: '16px', borderRadius: '12px' }}>Contact Agent</button>
-            </div>
-          </div>
+        )}
+
+        <div style={{ position: 'absolute', bottom: '40px', right: '40px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '8px 16px', borderRadius: '24px', color: 'white', fontSize: '13px', fontWeight: 500, border: '1px solid rgba(255,255,255,0.1)' }}>
+          {activeImg + 1} / {gallery.length} Photos
         </div>
       </div>
+
+      <div className="detail-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px 120px' }}>
+        <div className="detail-main-grid">
+          
+          {/* Left Column: Info */}
+          <div style={{ position: 'relative', zIndex: 10 }}>
+            <div style={{ background: 'var(--bg2)', padding: '32px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', marginBottom: '32px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+                <div>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                    <span style={{ padding: '4px 12px', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', borderRadius: '6px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase' }}>{property.type === 'rent' ? 'For Rent' : 'For Sale'}</span>
+                    {property.tags && property.tags.map(t => (
+                      <span key={t} style={{ padding: '4px 12px', background: 'rgba(255,255,255,0.05)', color: 'var(--text2)', borderRadius: '6px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', border: '1px solid var(--border)' }}>{t}</span>
+                    ))}
+                  </div>
+                  <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '42px', marginBottom: '8px', lineHeight: 1.1, color: 'var(--text)' }}>{property.title}</h1>
+                  <div style={{ color: 'var(--text2)', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <MapPin size={18} color="var(--gold)" /> {property.loc}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '36px', color: 'var(--gold)', fontWeight: 600, fontFamily: "'Cormorant Garamond', serif" }}>{property.price}</div>
+                  <div style={{ color: 'var(--text2)', fontSize: '15px' }}>{property.priceSub}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', borderTop: '1px solid var(--border2)', borderBottom: '1px solid var(--border2)', padding: '24px 0', margin: '24px 0' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <Bed size={20} color="var(--gold)" style={{ marginBottom: '8px' }} />
+                  <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.bhk} BHK</div>
+                  <div style={{ color: 'var(--text3)', fontSize: '11px', textTransform: 'uppercase' }}>Bedrooms</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Bath size={20} color="var(--gold)" style={{ marginBottom: '8px' }} />
+                  <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.bhk}</div>
+                  <div style={{ color: 'var(--text3)', fontSize: '11px', textTransform: 'uppercase' }}>Bathrooms</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Square size={20} color="var(--gold)" style={{ marginBottom: '8px' }} />
+                  <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.sqft}</div>
+                  <div style={{ color: 'var(--text3)', fontSize: '11px', textTransform: 'uppercase' }}>Sq.Ft</div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <Car size={20} color="var(--gold)" style={{ marginBottom: '8px' }} />
+                  <div style={{ color: 'var(--text)', fontWeight: 600 }}>1</div>
+                  <div style={{ color: 'var(--text3)', fontSize: '11px', textTransform: 'uppercase' }}>Parking</div>
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{ fontSize: '20px', color: 'var(--text)', marginBottom: '16px', fontFamily: "'Cormorant Garamond', serif" }}>Description</h3>
+                <p style={{ color: 'var(--text2)', lineHeight: 1.8, fontSize: '15px' }}>
+                  {property.desc} This property features premium finishes, state-of-the-art kitchen appliances, and expansive windows that offer breathtaking views and abundant natural light. Every detail has been meticulously curated to provide a sophisticated living experience.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '40px' }}>
+              <h3 style={{ fontSize: '22px', color: 'var(--text)', marginBottom: '20px', fontFamily: "'Cormorant Garamond', serif", display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <Sparkles size={20} color="var(--gold)" /> Premium Amenities
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px' }}>
+                {property.amenities.map(a => (
+                  <div key={a} style={{ background: 'var(--bg2)', padding: '16px 20px', borderRadius: '16px', fontSize: '14px', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '12px', transition: 'all 0.3s' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--gold)' }}></div>
+                    {a}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {property.features && (
+              <div style={{ marginBottom: '40px' }}>
+                <h3 style={{ fontSize: '22px', color: 'var(--text)', marginBottom: '20px', fontFamily: "'Cormorant Garamond', serif" }}>Property Features</h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                  {property.features.map(f => (
+                    <div key={f} style={{ background: 'rgba(255,255,255,0.03)', padding: '10px 20px', borderRadius: '30px', border: '1px solid var(--border)', fontSize: '13px', color: 'var(--text2)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Check size={14} color="var(--gold)" /> {f}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right Column: Sticky Contact */}
+          <div style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', padding: '32px', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <h4 style={{ fontSize: '20px', marginBottom: '8px', color: 'var(--text)', fontFamily: "'Cormorant Garamond', serif" }}>Schedule a Viewing</h4>
+                <p style={{ color: 'var(--text2)', fontSize: '14px' }}>Expert guidance for your premium investment</p>
+              </div>
+
+              {property.agent && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '16px', marginBottom: '24px', border: '1px solid var(--border2)' }}>
+                  <img src={property.agent.img} style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--gold)' }} />
+                  <div>
+                    <div style={{ fontWeight: 600, color: 'var(--text)' }}>{property.agent.name}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--gold)', textTransform: 'uppercase', letterSpacing: '1px' }}>Senior Advisor</div>
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <button className="btn-primary" style={{ width: '100%', padding: '18px', borderRadius: '14px', fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                  <Calendar size={18} /> Book Private Tour
+                </button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <button className="btn-ghost" style={{ padding: '16px', borderRadius: '14px', justifyContent: 'center', gap: '8px', borderColor: 'var(--border)' }}>
+                    <Phone size={18} /> Call
+                  </button>
+                  <button className="btn-ghost" style={{ padding: '16px', borderRadius: '14px', justifyContent: 'center', gap: '8px', borderColor: 'var(--border)' }}>
+                    <MessageSquare size={18} /> WhatsApp
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid var(--border2)', display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text3)', fontSize: '12px' }}>
+                <Shield size={16} /> Verified Luxury Listing by Umbrella
+              </div>
+            </div>
+
+            <div style={{ marginTop: '20px', background: 'var(--gold)', padding: '20px', borderRadius: '24px', color: '#000', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }}>
+              <div style={{ background: 'rgba(0,0,0,0.1)', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Maximize size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: '14px' }}>Virtual 3D Tour</div>
+                <div style={{ fontSize: '12px', opacity: 0.8 }}>Explore every corner from home</div>
+              </div>
+              <ExternalLink size={16} style={{ marginLeft: 'auto' }} />
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <motion.div 
+        className="mobile-only" 
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+        style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'rgba(10,10,12,0.95)', backdropFilter: 'blur(20px)', padding: '16px 20px', paddingBottom: 'calc(16px + env(safe-area-inset-bottom))', borderTop: '1px solid var(--border)', zIndex: 2200, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}
+      >
+        <div>
+          <div style={{ fontSize: '20px', color: 'var(--gold)', fontWeight: 600 }}>{property.price}</div>
+          <div style={{ fontSize: '12px', color: 'var(--text2)' }}>{property.priceSub}</div>
+        </div>
+        <button className="btn-primary" style={{ flex: 1, padding: '14px', borderRadius: '12px' }}>Contact Agent</button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function CustomCursor({ pos, type }) {
+  const isPointer = type === 'pointer';
+  
+  return (
+    <motion.div
+      className="custom-cursor"
+      animate={{
+        x: pos.x - 16,
+        y: pos.y - 16,
+        scale: isPointer ? 1.8 : 1,
+        backgroundColor: isPointer ? 'rgba(201,168,76,0.1)' : 'transparent',
+        borderColor: isPointer ? 'rgba(201,168,76,0.5)' : 'var(--gold)',
+        borderWidth: isPointer ? '0px' : '1px'
+      }}
+      transition={{ type: 'spring', damping: 25, stiffness: 300, mass: 0.5 }}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '32px',
+        height: '32px',
+        borderRadius: '50%',
+        pointerEvents: 'none',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backdropFilter: isPointer ? 'blur(4px)' : 'none'
+      }}
+    >
+      <motion.div 
+        animate={{ 
+          scale: isPointer ? 0.5 : 1,
+          opacity: isPointer ? 1 : 0.8
+        }}
+        style={{ width: '4px', height: '4px', backgroundColor: 'var(--gold)', borderRadius: '50%' }} 
+      />
+      
+      {isPointer && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            borderRadius: '50%',
+            border: '1px solid rgba(201,168,76,0.5)',
+          }}
+          transition={{ repeat: Infinity, duration: 1.5, ease: "easeOut" }}
+        />
+      )}
     </motion.div>
   );
 }
@@ -676,12 +1385,34 @@ function AnimatedBackground() {
 function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [selectedProperty, setSelectedProperty] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // State for properties management
   const [savedIds, setSavedIds] = useState([1, 2]); // Pre-populate some saved for demo
   const [showSwipe, setShowSwipe] = useState(false);
   const [matchedProperty, setMatchedProperty] = useState(null);
   const [detailPageProperty, setDetailPageProperty] = useState(null);
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [cursorType, setCursorType] = useState('default');
+
+  useEffect(() => {
+    const moveCursor = (e) => setCursorPos({ x: e.clientX, y: e.clientY });
+    window.addEventListener('mousemove', moveCursor, { passive: true });
+    return () => window.removeEventListener('mousemove', moveCursor);
+  }, []);
+
+  useEffect(() => {
+    const handleMouseOver = (e) => {
+      const target = e.target;
+      if (target.closest('button') || target.closest('.prop-card') || target.closest('.nav-item') || target.closest('a')) {
+        setCursorType('pointer');
+      } else {
+        setCursorType('default');
+      }
+    };
+    window.addEventListener('mouseover', handleMouseOver);
+    return () => window.removeEventListener('mouseover', handleMouseOver);
+  }, []);
 
   useEffect(() => {
     if (selectedProperty) {
@@ -717,9 +1448,9 @@ function App() {
   const renderContent = () => {
     switch(activeTab) {
       case 'home':
-        return <HomePage onSwipeOpen={() => setShowSwipe(true)} onSelect={setSelectedProperty} savedIds={savedIds} onSaveToggle={handleSaveToggle} />;
+        return <HomePage onSwipeOpen={() => setShowSwipe(true)} onSelect={setSelectedProperty} savedIds={savedIds} onSaveToggle={handleSaveToggle} searchQuery={searchQuery} onSearchChange={setSearchQuery} />;
       case 'explore':
-        return <ExplorePage onSelect={setSelectedProperty} savedIds={savedIds} onSaveToggle={handleSaveToggle} />;
+        return <ExplorePage onSelect={setSelectedProperty} savedIds={savedIds} onSaveToggle={handleSaveToggle} searchQuery={searchQuery} />;
       case 'saved':
         return <SavedPage savedIds={savedIds} onSelect={setSelectedProperty} onSaveToggle={handleSaveToggle} />;
       case 'compare':
@@ -728,12 +1459,13 @@ function App() {
         return <ChatPage />;
       default:
         // Default to home for Rent/Projects/More placeholders
-        return <HomePage onSwipeOpen={() => setShowSwipe(true)} onSelect={setSelectedProperty} savedIds={savedIds} onSaveToggle={handleSaveToggle} />;
+        return <HomePage onSwipeOpen={() => setShowSwipe(true)} onSelect={setSelectedProperty} savedIds={savedIds} onSaveToggle={handleSaveToggle} searchQuery={searchQuery} />;
     }
   };
 
   return (
-    <div className="app-container">
+    <div className="app-container" style={{ cursor: 'none' }}>
+      <CustomCursor pos={cursorPos} type={cursorType} />
       <AnimatedBackground />
       <Sidebar 
         activeTab={showSwipe ? 'swipe-virtual' : activeTab} 
@@ -749,16 +1481,16 @@ function App() {
       />
       
       <div className="main-content">
-        <TopHeader />
+        <TopHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         
         <AnimatePresence mode="wait">
           <motion.div 
             key={activeTab} 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15, ease: "linear" }}
-            style={{ willChange: 'opacity' }}
+            initial={{ opacity: 0, y: 10, filter: 'blur(10px)' }} 
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} 
+            exit={{ opacity: 0, y: -10, filter: 'blur(10px)' }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            style={{ willChange: 'opacity, transform, filter' }}
           >
             {renderContent()}
           </motion.div>
@@ -779,7 +1511,12 @@ function App() {
 
       <AnimatePresence>
         {detailPageProperty && (
-          <DetailPage property={detailPageProperty} onBack={() => setDetailPageProperty(null)} />
+          <DetailPage 
+            property={detailPageProperty} 
+            onBack={() => setDetailPageProperty(null)} 
+            savedIds={savedIds}
+            onSaveToggle={handleSaveToggle}
+          />
         )}
       </AnimatePresence>
     </div>
