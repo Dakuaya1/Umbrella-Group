@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umbrella Property</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dim: #8B6F2E;
+    --bg: #0A0A0B;
+    --bg2: #111113;
+    --bg3: #18181C;
+    --bg4: #1E1E24;
+    --surface: #232328;
+    --border: rgba(201,168,76,0.15);
+    --border2: rgba(255,255,255,0.07);
+    --text: #F0EDE8;
+    --text2: #9A9490;
+    --text3: #5A5652;
+    --green: #2ECC7A;
+    --red: #E05555;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 15px; overflow-x: hidden; }
+  
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; gap: 32px;
+    padding: 0 48px; height: 64px;
+    background: linear-gradient(to bottom, rgba(10,10,11,0.98) 0%, rgba(10,10,11,0) 100%);
+    transition: background 0.3s;
+  }
+  nav.scrolled { background: rgba(10,10,11,0.97); border-bottom: 0.5px solid var(--border); }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: 8px; }
+  .nav-logo svg { width: 28px; height: 28px; }
+  .nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--gold); letter-spacing: 0.08em; }
+  .nav-links { display: flex; gap: 4px; flex: 1; }
+  .nav-link { padding: 6px 14px; color: var(--text2); font-size: 14px; font-weight: 400; cursor: pointer; border-radius: 6px; transition: color 0.2s, background 0.2s; border: none; background: none; }
+  .nav-link:hover, .nav-link.active { color: var(--text); background: rgba(255,255,255,0.06); }
+  .nav-link.active { color: var(--gold); }
+  .nav-right { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+  .nav-icon-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; color: var(--text2); transition: color 0.2s, background 0.2s; }
+  .nav-icon-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+  .nav-btn { padding: 7px 18px; background: var(--gold); color: #000; font-size: 13px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; }
+  .nav-btn:hover { background: var(--gold-light); }
+
+  /* HERO */
+  .hero {
+    position: relative; height: 90vh; min-height: 600px;
+    display: flex; align-items: flex-end; padding: 0 48px 72px;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0d0d0f 0%, #1a1208 50%, #0d0a06 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-cards-visual {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 55%;
+    display: flex; align-items: center; justify-content: flex-end; padding-right: 48px; gap: 16px;
+  }
+  .hero-card-visual {
+    width: 200px; height: 280px; border-radius: 16px; overflow: hidden; position: relative;
+    border: 0.5px solid rgba(201,168,76,0.2);
+    flex-shrink: 0;
+    background: var(--bg3);
+    animation: heroCardFloat 4s ease-in-out infinite;
+  }
+  .hero-card-visual:nth-child(2) { width: 220px; height: 320px; animation-delay: 0.5s; }
+  .hero-card-visual:nth-child(3) { width: 190px; height: 260px; animation-delay: 1s; }
+  @keyframes heroCardFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  .hero-card-img {
+    width: 100%; height: 65%; object-fit: cover;
+    background: linear-gradient(135deg, #1a1508, #2a2010);
+    display: flex; align-items: center; justify-content: center; font-size: 40px;
+  }
+  .hero-card-info { padding: 12px; }
+  .hero-card-tag { display: inline-block; padding: 3px 8px; background: rgba(201,168,76,0.2); color: var(--gold); font-size: 10px; font-weight: 600; border-radius: 4px; letter-spacing: 0.06em; margin-bottom: 6px; text-transform: uppercase; }
+  .hero-card-name { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .hero-card-loc { font-size: 11px; color: var(--text2); margin-bottom: 6px; }
+  .hero-card-price { font-size: 15px; font-weight: 600; color: var(--gold); }
+  .hero-fade { position: absolute; inset: 0; background: linear-gradient(to right, var(--bg) 30%, transparent 70%), linear-gradient(to top, var(--bg) 0%, transparent 40%); }
+  .hero-content { position: relative; z-index: 1; max-width: 560px; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 0.5px solid var(--gold-dim); border-radius: 20px; font-size: 12px; color: var(--gold); margin-bottom: 20px; }
+  .hero-badge-dot { width: 6px; height: 6px; background: var(--gold); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(42px, 5vw, 68px); font-weight: 300; line-height: 1.05; margin-bottom: 16px; }
+  .hero-title span { color: var(--gold); font-style: italic; }
+  .hero-sub { font-size: 16px; color: var(--text2); line-height: 1.6; margin-bottom: 32px; max-width: 420px; }
+  .hero-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn-primary { padding: 12px 28px; background: var(--gold); color: #000; font-weight: 600; font-size: 14px; border: none; border-radius: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s, transform 0.15s; }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-ghost { padding: 12px 28px; background: rgba(255,255,255,0.06); color: var(--text); font-weight: 500; font-size: 14px; border: 0.5px solid var(--border2); border-radius: 10px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; display: flex; align-items: center; gap: 8px; }
+  .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+  .hero-stats { display: flex; gap: 32px; margin-top: 36px; padding-top: 28px; border-top: 0.5px solid var(--border2); }
+  .hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 500; color: var(--gold); }
+  .hero-stat-label { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  /* SEARCH BAR */
+  .search-section { padding: 0 48px; margin-top: -24px; position: relative; z-index: 10; margin-bottom: 48px; }
+  .search-bar { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 14px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+  .search-input { flex: 1; background: none; border: none; outline: none; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; }
+  .search-input::placeholder { color: var(--text3); }
+  .search-divider { width: 0.5px; height: 24px; background: var(--border2); }
+  .search-filter { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 8px; cursor: pointer; transition: background 0.2s; color: var(--text2); font-size: 13px; }
+  .search-filter:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .filter-active { color: var(--gold); }
+  .search-btn { padding: 8px 20px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; transition: background 0.2s; }
+  .search-btn:hover { background: var(--gold-light); }
+
+  /* ROWS */
+  main { padding: 0 0 80px; }
+  .row-section { margin-bottom: 48px; }
+  .row-header { display: flex; align-items: center; justify-content: space-between; padding: 0 48px; margin-bottom: 18px; }
+  .row-title { font-size: 20px; font-weight: 500; }
+  .row-title-accent { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic; }
+  .row-subtitle { font-size: 13px; color: var(--text2); margin-top: 3px; }
+  .row-view-all { font-size: 13px; color: var(--gold); cursor: pointer; border: none; background: none; font-family: 'DM Sans', sans-serif; padding: 6px 14px; border-radius: 6px; transition: background 0.2s; }
+  .row-view-all:hover { background: rgba(201,168,76,0.08); }
+  .row-scroll { display: flex; gap: 16px; padding: 4px 48px 12px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .row-scroll::-webkit-scrollbar { display: none; }
+
+  /* PROPERTY CARD */
+  .prop-card {
+    flex-shrink: 0; width: 240px; border-radius: 14px; overflow: hidden;
+    background: var(--bg3); border: 0.5px solid var(--border2);
+    cursor: pointer; scroll-snap-align: start;
+    transition: transform 0.25s cubic-bezier(.25,.46,.45,.94), border-color 0.25s, box-shadow 0.25s;
+    position: relative;
+  }
+  .prop-card:hover { transform: translateY(-6px) scale(1.02); border-color: rgba(201,168,76,0.4); box-shadow: 0 16px 48px rgba(0,0,0,0.5); }
+  .prop-card:hover .prop-overlay { opacity: 1; }
+  .prop-img {
+    width: 100%; height: 160px; object-fit: cover;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px; position: relative; overflow: hidden;
+  }
+  .prop-img-bg { position: absolute; inset: 0; }
+  .prop-img-emoji { position: relative; z-index: 1; font-size: 40px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)); }
+  .prop-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.8) 100%); opacity: 0; transition: opacity 0.2s; display: flex; align-items: flex-end; justify-content: space-between; padding: 12px; z-index: 2; }
+  .prop-overlay-actions { display: flex; gap: 8px; }
+  .prop-overlay-btn { width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: transform 0.15s; }
+  .prop-overlay-btn:hover { transform: scale(1.1); }
+  .prop-overlay-btn.save { background: var(--gold); color: #000; }
+  .prop-overlay-btn.info { background: rgba(255,255,255,0.15); color: white; }
+  .prop-tags { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; z-index: 3; }
+  .prop-tag { padding: 3px 7px; border-radius: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .tag-featured { background: var(--gold); color: #000; }
+  .tag-new { background: var(--green); color: #000; }
+  .tag-hot { background: #E05555; color: #fff; }
+  .tag-premium { background: rgba(201,168,76,0.2); color: var(--gold); border: 0.5px solid var(--gold-dim); }
+  .prop-body { padding: 14px; }
+  .prop-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prop-loc { font-size: 12px; color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+  .prop-price { font-size: 18px; font-weight: 600; color: var(--gold); margin-bottom: 8px; }
+  .prop-price-sub { font-size: 12px; color: var(--text2); font-weight: 400; }
+  .prop-specs { display: flex; gap: 12px; margin-bottom: 10px; }
+  .prop-spec { font-size: 12px; color: var(--text2); display: flex; align-items: center; gap: 4px; }
+  .prop-spec-dot { width: 3px; height: 3px; background: var(--text3); border-radius: 50%; }
+  .prop-amenities { display: flex; gap: 6px; flex-wrap: wrap; }
+  .prop-amenity { padding: 3px 8px; background: var(--bg4); border-radius: 4px; font-size: 11px; color: var(--text2); }
+
+  /* FEATURED (wide) card */
+  .prop-card-wide { width: 340px; }
+  .prop-card-wide .prop-img { height: 200px; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    backdrop-filter: blur(4px);
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    width: 100%; max-width: 900px; max-height: 90vh; background: var(--bg2);
+    border-radius: 20px; overflow: hidden; border: 0.5px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: scale(0.95) translateY(20px); transition: transform 0.3s cubic-bezier(.25,.46,.45,.94);
+  }
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+  .modal-hero { width: 100%; height: 280px; background: var(--bg3); position: relative; display: flex; align-items: center; justify-content: center; font-size: 80px; overflow: hidden; flex-shrink: 0; }
+  .modal-hero-bg { position: absolute; inset: 0; }
+  .modal-hero-emoji { position: relative; z-index: 1; }
+  .modal-hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 60%; background: linear-gradient(transparent, var(--bg2)); }
+  .modal-close { position: absolute; top: 16px; right: 16px; z-index: 10; width: 36px; height: 36px; background: rgba(0,0,0,0.5); border: none; border-radius: 50%; color: white; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .modal-close:hover { background: rgba(0,0,0,0.8); }
+  .modal-body { padding: 24px 32px; overflow-y: auto; flex: 1; }
+  .modal-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 400; }
+  .modal-loc { color: var(--text2); font-size: 14px; margin-top: 4px; }
+  .modal-price-block { text-align: right; }
+  .modal-price { font-size: 26px; font-weight: 600; color: var(--gold); }
+  .modal-price-detail { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .modal-tabs { display: flex; gap: 4px; border-bottom: 0.5px solid var(--border2); margin-bottom: 20px; }
+  .modal-tab { padding: 8px 16px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; color: var(--text2); border: none; background: none; font-family: 'DM Sans', sans-serif; margin-bottom: -0.5px; }
+  .modal-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+  .modal-tab-content { display: none; }
+  .modal-tab-content.active { display: block; }
+  .modal-section-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; }
+  .modal-desc { font-size: 14px; color: var(--text2); line-height: 1.7; margin-bottom: 20px; }
+  .modal-specs-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+  .modal-spec-item { background: var(--bg3); border-radius: 10px; padding: 14px; }
+  .modal-spec-icon { font-size: 20px; margin-bottom: 6px; }
+  .modal-spec-value { font-size: 16px; font-weight: 500; }
+  .modal-spec-label { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .modal-amenities-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+  .modal-amenity { display: flex; align-items: center; gap: 6px; padding: 7px 12px; background: var(--bg3); border-radius: 8px; font-size: 13px; }
+  .modal-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 0.5px solid var(--border2); }
+  .modal-action-btn { flex: 1; padding: 13px; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; transition: opacity 0.2s, transform 0.15s; }
+  .modal-action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .modal-action-primary { background: var(--gold); color: #000; }
+  .modal-action-secondary { background: var(--bg3); color: var(--text); border: 0.5px solid var(--border2); }
+  .modal-action-wa { background: #25D366; color: #000; }
+
+  /* SWIPE MODE */
+  .swipe-overlay {
+    position: fixed; inset: 0; z-index: 150; background: rgba(5,5,6,0.97);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .swipe-overlay.open { opacity: 1; pointer-events: all; }
+  .swipe-header { position: absolute; top: 0; left: 0; right: 0; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .swipe-close { background: rgba(255,255,255,0.08); border: none; color: var(--text); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .swipe-close:hover { background: rgba(255,255,255,0.15); }
+  .swipe-count { font-size: 13px; color: var(--text2); }
+  .swipe-card-stack { position: relative; width: 320px; height: 480px; }
+  .swipe-card {
+    position: absolute; inset: 0; border-radius: 20px; overflow: hidden;
+    background: var(--bg3); border: 0.5px solid var(--border);
+    cursor: grab; user-select: none;
+    transition: transform 0.3s cubic-bezier(.25,.46,.45,.94);
+  }
+  .swipe-card.is-dragging { cursor: grabbing; transition: none; }
+  .swipe-card:nth-child(2) { transform: scale(0.95) translateY(12px); z-index: 1; }
+  .swipe-card:nth-child(3) { transform: scale(0.9) translateY(24px); z-index: 0; }
+  .swipe-card-img { width: 100%; height: 65%; display: flex; align-items: center; justify-content: center; font-size: 64px; position: relative; overflow: hidden; }
+  .swipe-card-img-bg { position: absolute; inset: 0; }
+  .swipe-card-img-emoji { position: relative; z-index: 1; }
+  .swipe-card-body { padding: 20px; }
+  .swipe-card-name { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; margin-bottom: 4px; }
+  .swipe-card-loc { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+  .swipe-card-price { font-size: 22px; font-weight: 600; color: var(--gold); }
+  .swipe-card-specs { display: flex; gap: 16px; margin-top: 10px; }
+  .swipe-card-spec { font-size: 13px; color: var(--text2); }
+  .swipe-feedback {
+    position: absolute; top: 20px; padding: 8px 20px; border-radius: 8px;
+    font-size: 18px; font-weight: 700; letter-spacing: 0.08em; opacity: 0;
+    transition: opacity 0.15s; z-index: 10; pointer-events: none;
+  }
+  .swipe-feedback.like { left: 16px; background: rgba(46,204,122,0.2); color: var(--green); border: 2px solid var(--green); }
+  .swipe-feedback.pass { right: 16px; background: rgba(224,85,85,0.2); color: var(--red); border: 2px solid var(--red); }
+  .swipe-buttons { display: flex; gap: 20px; margin-top: 32px; }
+  .swipe-btn { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 24px; transition: transform 0.15s, box-shadow 0.15s; }
+  .swipe-btn:hover { transform: scale(1.1); }
+  .swipe-btn.pass { background: rgba(224,85,85,0.15); border: 1.5px solid rgba(224,85,85,0.4); }
+  .swipe-btn.info { background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15); }
+  .swipe-btn.like { background: rgba(46,204,122,0.15); border: 1.5px solid rgba(46,204,122,0.4); }
+
+  /* AI CONCIERGE */
+  .ai-section { padding: 0 48px; margin-bottom: 56px; }
+  .ai-bar { background: var(--bg3); border: 0.5px solid var(--border); border-radius: 16px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; position: relative; overflow: hidden; }
+  .ai-bar::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(201,168,76,0.04) 0%, transparent 60%); pointer-events: none; }
+  .ai-icon { width: 44px; height: 44px; background: linear-gradient(135deg, var(--gold-dim), var(--gold)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .ai-text { flex: 1; }
+  .ai-label { font-size: 11px; font-weight: 600; color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .ai-greeting { font-size: 14px; color: var(--text2); }
+  .ai-input-wrap { display: flex; gap: 10px; flex: 2; max-width: 420px; }
+  .ai-input { flex: 1; background: var(--bg4); border: 0.5px solid var(--border2); border-radius: 10px; padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .ai-input:focus { border-color: var(--gold-dim); }
+  .ai-input::placeholder { color: var(--text3); }
+  .ai-send-btn { padding: 10px 18px; background: var(--gold); color: #000; border: none; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px; font-family: 'DM Sans', sans-serif; transition: background 0.2s; white-space: nowrap; }
+  .ai-send-btn:hover { background: var(--gold-light); }
+
+  /* MAP */
+  .map-section { padding: 0 48px; margin-bottom: 56px; }
+  .map-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  .map-container { border-radius: 16px; overflow: hidden; border: 0.5px solid var(--border); height: 320px; background: var(--bg3); position: relative; display: flex; align-items: center; justify-content: center; }
+  .map-placeholder { text-align: center; }
+  .map-placeholder-icon { font-size: 48px; margin-bottom: 12px; }
+  .map-placeholder-text { font-size: 15px; color: var(--text2); margin-bottom: 16px; }
+  .map-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px); background-size: 40px 40px; }
+  .map-pin { position: absolute; background: var(--gold); color: #000; padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+  .map-pin:hover { transform: scale(1.1) translateY(-2px); }
+  .map-pin::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--gold); }
+
+  /* COMPARE */
+  .compare-bar {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(120%);
+    z-index: 50; background: var(--bg2); border: 0.5px solid var(--border);
+    border-radius: 14px; padding: 14px 20px; display: flex; align-items: center; gap: 16px;
+    transition: transform 0.3s cubic-bezier(.25,.46,.45,.94);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    min-width: 380px;
+  }
+  .compare-bar.visible { transform: translateX(-50%) translateY(0); }
+  .compare-bar-title { font-size: 13px; color: var(--text2); white-space: nowrap; }
+  .compare-slots { display: flex; gap: 8px; flex: 1; }
+  .compare-slot { flex: 1; min-width: 80px; height: 36px; border-radius: 8px; border: 0.5px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text3); }
+  .compare-slot.filled { background: var(--bg3); border-style: solid; border-color: var(--border); color: var(--text); font-size: 11px; }
+  .compare-go-btn { padding: 8px 18px; background: var(--gold); color: #000; border: none; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 96px; right: 24px; z-index: 300; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; padding: 12px 20px; font-size: 13px; color: var(--text); transform: translateY(20px); opacity: 0; transition: transform 0.3s, opacity 0.3s; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 10px; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 18px; }
+
+  /* SAVED BADGE */
+  .saved-badge { position: fixed; top: 80px; right: 24px; z-index: 90; background: var(--bg3); border: 0.5px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: var(--gold); display: flex; align-items: center; gap: 6px; }
+  .saved-count { font-weight: 600; }
+
+  /* SECTIONS */
+  .section-divider { height: 0.5px; background: var(--border2); margin: 0 48px 48px; }
+
+  /* BUILDER SECTION */
+  .builder-section { padding: 0 48px; margin-bottom: 48px; }
+  .builder-card { background: var(--bg3); border-radius: 20px; padding: 0; overflow: hidden; border: 0.5px solid var(--border); position: relative; display: flex; min-height: 220px; }
+  .builder-visual { flex: 1; min-height: 220px; display: flex; align-items: center; justify-content: center; font-size: 72px; background: linear-gradient(135deg, #1a1508 0%, #0d0d0f 100%); position: relative; overflow: hidden; padding: 32px; }
+  .builder-content { flex: 1.2; padding: 32px 36px; display: flex; flex-direction: column; justify-content: center; }
+  .builder-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: rgba(201,168,76,0.1); border: 0.5px solid var(--gold-dim); border-radius: 20px; font-size: 11px; color: var(--gold); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; width: fit-content; margin-bottom: 14px; }
+  .builder-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 400; line-height: 1.1; margin-bottom: 10px; }
+  .builder-desc { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; max-width: 360px; }
+  .builder-info { display: flex; gap: 24px; margin-bottom: 20px; }
+  .builder-info-item { font-size: 13px; color: var(--text2); }
+  .builder-info-val { font-size: 15px; font-weight: 500; color: var(--text); display: block; margin-top: 2px; }
+
+  /* FOOTER ROW */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,11,0.97); border-top: 0.5px solid var(--border2); padding: 8px 0; display: none; z-index: 80; }
+  @media (max-width: 768px) { .bottom-nav { display: flex; justify-content: space-around; } }
+
+  /* ANIMATIONS */
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeSlideUp 0.5s ease forwards; }
+  .delay-1 { animation-delay: 0.1s; opacity: 0; }
+  .delay-2 { animation-delay: 0.2s; opacity: 0; }
+  .delay-3 { animation-delay: 0.3s; opacity: 0; }
+  .delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+  /* AVAILABILITY INDICATOR */
+  .avail-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .avail-dot.available { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .avail-dot.gone { background: var(--red); }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="13" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M7 16 Q14 6 21 16" stroke="#C9A84C" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <line x1="14" y1="16" x2="14" y2="22" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">UMBRELLA</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="setNav(this,'home')">Home</button>
+    <button class="nav-link" onclick="setNav(this,'explore')">Explore</button>
+    <button class="nav-link" onclick="openSwipe()">Swipe</button>
+    <button class="nav-link" onclick="setNav(this,'projects')">Projects</button>
+    <button class="nav-link" onclick="setNav(this,'saved')">Saved</button>
+  </div>
+  <div class="nav-right">
+    <button class="nav-icon-btn" title="Search" onclick="document.getElementById('searchInput').focus()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <button class="nav-icon-btn" title="Notifications">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 0 0-4 4v3l-1.5 2h11L12 9V6a4 4 0 0 0-4-4z" stroke="currentColor" stroke-width="1.5"/><path d="M6.5 13a1.5 1.5 0 0 0 3 0" stroke="currentColor" stroke-width="1.5"/></svg>
+    </button>
+    <button class="nav-btn">Login</button>
+  </div>
+</nav>
+
+<!-- SAVED BADGE -->
+<div class="saved-badge" id="savedBadge" style="display:none">
+  <span>♥</span> <span class="saved-count" id="savedCount">0</span> saved
+</div>
+
+<!-- HERO -->
+<section class="hero animate-in">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-fade"></div>
+  <div class="hero-cards-visual">
+    <div class="hero-card-visual delay-1 animate-in">
+      <div class="hero-card-img">
+        <div class="hero-card-img" style="background:linear-gradient(135deg,#1a1008,#2d1e08)">
+          <div style="font-size:40px">🏰</div>
+        </div>
+      </div>
+      <div class="hero-card-info">
+        <span class="hero-card-tag">Featured</span>
+        <div class="hero-card-name">Skyline Residences</div>
+        <div class="hero-card-loc">Baner, Pune</div>
+        <div class="hero-card-price">₹1.45 Cr</div>
+      </div>
+    </div>
+    <div class="hero-card-visual delay-2 animate-in">
+      <div class="hero-card-img" style="background:linear-gradient(135deg,#080d1a,#101828)">
+        <div style="font-size:40px">🌆</div>
+      </div>
+      <div class="hero-card-info">
+        <span class="hero-card-tag" style="background:rgba(46,204,122,0.2);color:#2ECC7A">New</span>
+        <div class="hero-card-name">Urban Nest</div>
+        <div class="hero-card-loc">Wakad, Pune</div>
+        <div class="hero-card-price">₹1.25 Cr</div>
+      </div>
+    </div>
+    <div class="hero-card-visual delay-3 animate-in">
+      <div class="hero-card-img" style="background:linear-gradient(135deg,#0d1208,#1a2008)">
+        <div style="font-size:40px">🌿</div>
+      </div>
+      <div class="hero-card-info">
+        <span class="hero-card-tag" style="background:rgba(201,168,76,0.15);color:#C9A84C;border:0.5px solid #8B6F2E">Premium</span>
+        <div class="hero-card-name">Greenview</div>
+        <div class="hero-card-loc">Balewadi, Pune</div>
+        <div class="hero-card-price">₹25 L</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-content animate-in delay-2">
+    <div class="hero-badge"><div class="hero-badge-dot"></div> 340+ Properties Live</div>
+    <h1 class="hero-title">Find Your<br><span>Perfect Space</span></h1>
+    <p class="hero-sub">Discover premium properties through an immersive, Netflix-style catalog. Scroll, swipe, and settle.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="scrollToRows()">Explore Properties</button>
+      <button class="btn-ghost" onclick="openSwipe()"><span>♠</span> Swipe Mode</button>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">340+</div><div class="hero-stat-label">Active Listings</div></div>
+      <div><div class="hero-stat-num">12+</div><div class="hero-stat-label">Premium Projects</div></div>
+      <div><div class="hero-stat-num">98%</div><div class="hero-stat-label">Verified Listings</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEARCH -->
+<div class="search-section animate-in delay-3" id="searchSection">
+  <div class="search-bar">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="color:var(--text3);flex-shrink:0"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="11" x2="15" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input class="search-input" id="searchInput" placeholder="Try: 2BHK flat under ₹30k in Baner..." />
+    <div class="search-divider"></div>
+    <div class="search-filter filter-active" onclick="toggleFilter(this,'Rent')">🏠 Rent</div>
+    <div class="search-filter" onclick="toggleFilter(this,'Buy')">🔑 Buy</div>
+    <div class="search-divider"></div>
+    <div class="search-filter" onclick="toggleFilter(this,'2BHK')">2BHK</div>
+    <div class="search-filter" onclick="toggleFilter(this,'3BHK')">3BHK</div>
+    <div class="search-divider"></div>
+    <div class="search-filter" onclick="toggleFilter(this,'Baner')">📍 Baner</div>
+    <div class="search-filter" onclick="toggleFilter(this,'Wakad')">📍 Wakad</div>
+    <button class="search-btn">Search</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main id="mainRows">
+
+<!-- AI CONCIERGE -->
+<div class="ai-section animate-in delay-4">
+  <div class="ai-bar">
+    <div class="ai-icon">✨</div>
+    <div class="ai-text">
+      <div class="ai-label">AI Concierge</div>
+      <div class="ai-greeting">Hi there 👋 How can I help you find your perfect property?</div>
+    </div>
+    <div class="ai-input-wrap">
+      <input class="ai-input" id="aiInput" placeholder="2BHK under ₹30k in Baner..." />
+      <button class="ai-send-btn" onclick="aiSearch()">Ask AI</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROW: TOP PICKS -->
+<div class="row-section" id="topPicks">
+  <div class="row-header">
+    <div>
+      <div class="row-title"><span class="row-title-accent">Top Picks</span> For You</div>
+      <div class="row-subtitle">Curated based on your location — Pune</div>
+    </div>
+    <button class="row-view-all" onclick="showToast('Showing all top picks →')">View all</button>
+  </div>
+  <div class="row-scroll" id="topPicksRow"></div>
+</div>
+
+<!-- ROW: UNDER BUDGET -->
+<div class="row-section">
+  <div class="row-header">
+    <div>
+      <div class="row-title"><span class="row-title-accent">Under</span> ₹50 Lakh</div>
+      <div class="row-subtitle">Affordable homes, no compromise on quality</div>
+    </div>
+    <button class="row-view-all" onclick="showToast('Showing all under ₹50L →')">View all</button>
+  </div>
+  <div class="row-scroll" id="underBudgetRow"></div>
+</div>
+
+<!-- BUILDER SECTION -->
+<div class="builder-section">
+  <div class="row-header" style="padding:0;margin-bottom:18px">
+    <div>
+      <div class="row-title"><span class="row-title-accent">Premium</span> Builder Projects</div>
+      <div class="row-subtitle">Handpicked developments with trusted builders</div>
+    </div>
+  </div>
+  <div class="builder-card">
+    <div class="builder-visual">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,0.05),transparent)"></div>
+      <div style="font-size:80px;filter:drop-shadow(0 4px 20px rgba(201,168,76,0.3))">🏙️</div>
+    </div>
+    <div class="builder-content">
+      <div class="builder-badge">✦ Launch Offer</div>
+      <div class="builder-title">Horizon Towers<br>Phase II</div>
+      <div class="builder-desc">Ultra-luxury 3 & 4 BHK residences with panoramic city views, private terraces, and resort-grade amenities in the heart of Baner.</div>
+      <div class="builder-info">
+        <div class="builder-info-item">Starting at<span class="builder-info-val">₹1.8 Cr</span></div>
+        <div class="builder-info-item">Possession<span class="builder-info-val">Dec 2026</span></div>
+        <div class="builder-info-item">Units<span class="builder-info-val">248 Left</span></div>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button class="btn-primary" onclick="showToast('Opening Horizon Towers details...')">View Project</button>
+        <button class="btn-ghost" onclick="showToast('3D walkthrough coming soon!')">3D Tour ▶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW: HIGH RENTAL YIELD -->
+<div class="row-section">
+  <div class="row-header">
+    <div>
+      <div class="row-title"><span class="row-title-accent">High Rental</span> Yield</div>
+      <div class="row-subtitle">Best ROI properties for investors</div>
+    </div>
+    <button class="row-view-all" onclick="showToast('Showing all high-yield →')">View all</button>
+  </div>
+  <div class="row-scroll" id="yieldRow"></div>
+</div>
+
+<!-- ROW: NEW LISTINGS -->
+<div class="row-section">
+  <div class="row-header">
+    <div>
+      <div class="row-title"><span class="row-title-accent">New</span> Listings</div>
+      <div class="row-subtitle">Just added in the last 48 hours</div>
+    </div>
+    <button class="row-view-all" onclick="showToast('Showing all new listings →')">View all</button>
+  </div>
+  <div class="row-scroll" id="newListingsRow"></div>
+</div>
+
+<!-- MAP -->
+<div class="map-section">
+  <div class="map-header">
+    <div>
+      <div class="row-title"><span class="row-title-accent">Map</span> View</div>
+      <div class="row-subtitle">Browse by location across Pune</div>
+    </div>
+    <button class="row-view-all" onclick="showToast('Opening full map mode →')">Full Map</button>
+  </div>
+  <div class="map-container">
+    <div class="map-grid"></div>
+    <div class="map-pin" style="top:40%;left:35%" onclick="showToast('Baner: 42 properties')">Baner ₹28K</div>
+    <div class="map-pin" style="top:30%;left:55%" onclick="showToast('Wakad: 28 properties')">Wakad ₹22K</div>
+    <div class="map-pin" style="top:60%;left:48%" onclick="showToast('Kothrud: 35 properties')">Kothrud ₹25K</div>
+    <div class="map-pin" style="top:50%;left:70%" onclick="showToast('Hadapsar: 19 properties')">Hadapsar ₹18K</div>
+    <div class="map-pin" style="top:25%;left:40%" onclick="showToast('Hinjewadi: 31 properties')" style="background:#E8C97A">Hinjewadi ₹30K</div>
+    <div style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--text2)">📍 Showing 155 properties across Pune</div>
+  </div>
+</div>
+
+</main>
+
+<!-- COMPARE BAR -->
+<div class="compare-bar" id="compareBar">
+  <div class="compare-bar-title">Compare</div>
+  <div class="compare-slots" id="compareSlots">
+    <div class="compare-slot">+ Add</div>
+    <div class="compare-slot">+ Add</div>
+    <div class="compare-slot">+ Add</div>
+  </div>
+  <button class="compare-go-btn" onclick="showToast('Opening comparison view →')">Compare →</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-hero" id="modalHero">
+      <div class="modal-hero-bg" id="modalHeroBg"></div>
+      <div class="modal-hero-emoji" id="modalHeroEmoji" style="font-size:80px"></div>
+      <div class="modal-hero-overlay"></div>
+      <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalTitle"></div>
+          <div class="modal-loc" id="modalLoc"></div>
+        </div>
+        <div class="modal-price-block">
+          <div class="modal-price" id="modalPrice"></div>
+          <div class="modal-price-detail" id="modalPriceDetail"></div>
+        </div>
+      </div>
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchTab(this,'overview')">Overview</button>
+        <button class="modal-tab" onclick="switchTab(this,'amenities')">Amenities</button>
+        <button class="modal-tab" onclick="switchTab(this,'location')">Location</button>
+      </div>
+      <div class="modal-tab-content active" id="tab-overview">
+        <div class="modal-section-title">About this property</div>
+        <div class="modal-desc" id="modalDesc"></div>
+        <div class="modal-section-title">Key Details</div>
+        <div class="modal-specs-grid" id="modalSpecs"></div>
+      </div>
+      <div class="modal-tab-content" id="tab-amenities">
+        <div class="modal-section-title">Amenities</div>
+        <div class="modal-amenities-grid" id="modalAmenities"></div>
+      </div>
+      <div class="modal-tab-content" id="tab-location">
+        <div class="modal-desc">Located in a prime area with excellent connectivity to IT parks, schools, hospitals, and shopping centers.</div>
+        <div style="background:var(--bg3);border-radius:12px;height:160px;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:14px;border:0.5px solid var(--border2)">📍 Map integration — Tap to open in Google Maps</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-action-btn modal-action-primary" onclick="showToast('📅 Visit scheduled! You'll get a confirmation shortly.')">Schedule Visit</button>
+        <button class="modal-action-btn modal-action-wa" onclick="showToast('Opening WhatsApp...')">WhatsApp</button>
+        <button class="modal-action-btn modal-action-secondary" onclick="saveFromModal()">♥ Save</button>
+        <button class="modal-action-btn modal-action-secondary" onclick="addToCompare()">⊞ Compare</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SWIPE MODE -->
+<div class="swipe-overlay" id="swipeOverlay">
+  <div class="swipe-header">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gold)">Swipe Mode</div>
+    <div class="swipe-count" id="swipeCount">1 / 8</div>
+    <button class="swipe-close" onclick="closeSwipe()">✕</button>
+  </div>
+  <div class="swipe-card-stack" id="swipeStack"></div>
+  <div class="swipe-buttons">
+    <button class="swipe-btn pass" onclick="doSwipe('pass')">✕</button>
+    <button class="swipe-btn info" onclick="openSwipeInfo()">ℹ</button>
+    <button class="swipe-btn like" onclick="doSwipe('like')">♥</button>
+  </div>
+  <div style="margin-top:16px;font-size:12px;color:var(--text3)">Swipe right to save · Swipe left to pass</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✓</span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+const PROPS = [
+  { id:1, title:'Skyline Residences', loc:'Baner, Pune', price:'₹1.45 Cr', priceSub:'3 BHK · 1680 sq.ft', type:'buy', bhk:3, sqft:1680, emoji:'🏰', bg:'linear-gradient(135deg,#1a1008,#2d1e08)', tags:['featured'], amenities:['🏊 Pool','🏋 Gym','🅿 Parking','🛡 Security','🌿 Garden'], desc:'Spacious 3 BHK with modern amenities, beautiful city view and prime location. Perfect for families and working professionals.', specs:[{icon:'🛏',val:'3 BHK',lbl:'Bedrooms'},{icon:'📐',val:'1680',lbl:'Sq.ft'},{icon:'🏢',val:'12th Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'2 Car',lbl:'Parking'},{icon:'🏗',val:'2019',lbl:'Built'}] },
+  { id:2, title:'Urban Nest', loc:'Wakad, Pune', price:'₹1.25 Cr', priceSub:'2 BHK · 1050 sq.ft', type:'buy', bhk:2, sqft:1050, emoji:'🌆', bg:'linear-gradient(135deg,#080d1a,#101828)', tags:['new'], amenities:['🏋 Gym','🅿 Parking','🛡 Security','📦 Storage'], desc:'Modern 2 BHK apartment with contemporary design, excellent connectivity, and world-class facilities in a prime Wakad location.', specs:[{icon:'🛏',val:'2 BHK',lbl:'Bedrooms'},{icon:'📐',val:'1050',lbl:'Sq.ft'},{icon:'🏢',val:'8th Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'1 Car',lbl:'Parking'},{icon:'🏗',val:'2022',lbl:'Built'}] },
+  { id:3, title:'Greenview Heights', loc:'Balewadi, Pune', price:'₹25 L', priceSub:'1 BHK · 650 sq.ft', type:'rent', bhk:1, sqft:650, emoji:'🌿', bg:'linear-gradient(135deg,#0a1208,#162010)', tags:['premium'], amenities:['🌿 Garden','🅿 Parking','🛡 Security'], desc:'Charming 1 BHK with lush green views and peaceful surroundings. Ideal for young professionals seeking tranquility.', specs:[{icon:'🛏',val:'1 BHK',lbl:'Bedrooms'},{icon:'📐',val:'650',lbl:'Sq.ft'},{icon:'🏢',val:'3rd Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'1 Car',lbl:'Parking'},{icon:'🏗',val:'2020',lbl:'Built'}] },
+  { id:4, title:'The Horizon', loc:'Baner, Pune', price:'₹27K /mo', priceSub:'2 BHK · 950 sq.ft', type:'rent', bhk:2, sqft:950, emoji:'🌄', bg:'linear-gradient(135deg,#120a0a,#201018)', tags:['hot'], amenities:['🏊 Pool','🏋 Gym','🅿 Parking','🛡 24/7 Security','☕ Cafeteria'], desc:'Premium rental with rooftop pool access, dedicated workspace, and smart home features. The ultimate urban lifestyle.', specs:[{icon:'🛏',val:'2 BHK',lbl:'Bedrooms'},{icon:'📐',val:'950',lbl:'Sq.ft'},{icon:'🏢',val:'15th Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'1 Car',lbl:'Parking'},{icon:'🏗',val:'2023',lbl:'Built'}] },
+  { id:5, title:'Pearl Apartments', loc:'Kothrud, Pune', price:'₹18 L', priceSub:'1 BHK · 550 sq.ft', type:'rent', bhk:1, sqft:550, emoji:'🪨', bg:'linear-gradient(135deg,#0d1018,#151a25)', tags:['new'], amenities:['🅿 Parking','🛡 Security'], desc:'Affordable and cozy 1 BHK in the heart of Kothrud. Walking distance to SNDT College and D-Mart.', specs:[{icon:'🛏',val:'1 BHK',lbl:'Bedrooms'},{icon:'📐',val:'550',lbl:'Sq.ft'},{icon:'🏢',val:'2nd Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'Shared',lbl:'Parking'},{icon:'🏗',val:'2015',lbl:'Built'}] },
+  { id:6, title:'Serene Villas', loc:'Hinjewadi, Pune', price:'₹2.1 Cr', priceSub:'4 BHK · 2400 sq.ft', type:'buy', bhk:4, sqft:2400, emoji:'🌸', bg:'linear-gradient(135deg,#120818,#1e1025)', tags:['premium','featured'], amenities:['🏊 Private Pool','🏋 Gym','🌿 Garden','🛡 Security','🎮 Clubhouse','🅿 3 Cars'], desc:'Exclusive villa community in the IT hub with private pools, smart automation, and premium finishes throughout.', specs:[{icon:'🛏',val:'4 BHK',lbl:'Bedrooms'},{icon:'📐',val:'2400',lbl:'Sq.ft'},{icon:'🏢',val:'Ground+1',lbl:'Type'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'3 Cars',lbl:'Parking'},{icon:'🏗',val:'2024',lbl:'Built'}] },
+  { id:7, title:'Metro Suites', loc:'Hadapsar, Pune', price:'₹22 L', priceSub:'1 BHK · 600 sq.ft', type:'rent', bhk:1, sqft:600, emoji:'🏗', bg:'linear-gradient(135deg,#0a0808,#181010)', tags:['new'], amenities:['🅿 Parking','🛡 Security','📦 Storage'], desc:'Modern studio-style apartment near the upcoming metro station. Perfect for IT professionals in Hadapsar.', specs:[{icon:'🛏',val:'1 BHK',lbl:'Bedrooms'},{icon:'📐',val:'600',lbl:'Sq.ft'},{icon:'🏢',val:'5th Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'1 Car',lbl:'Parking'},{icon:'🏗',val:'2021',lbl:'Built'}] },
+  { id:8, title:'Lotus Towers', loc:'Wakad, Pune', price:'₹1.6 Cr', priceSub:'3 BHK · 1800 sq.ft', type:'buy', bhk:3, sqft:1800, emoji:'🪷', bg:'linear-gradient(135deg,#0a0d12,#12141a)', tags:['featured'], amenities:['🏊 Pool','🏋 Gym','🎮 Clubhouse','🌿 Garden','🛡 Security','🅿 2 Cars'], desc:'Iconic tower living with breathtaking lake views, infinity pool, and a dedicated yoga & wellness center.', specs:[{icon:'🛏',val:'3 BHK',lbl:'Bedrooms'},{icon:'📐',val:'1800',lbl:'Sq.ft'},{icon:'🏢',val:'18th Floor',lbl:'Floor'},{icon:'📅',val:'Available',lbl:'Status'},{icon:'🅿',val:'2 Cars',lbl:'Parking'},{icon:'🏗',val:'2023',lbl:'Built'}] },
+];
+
+let savedProps = new Set();
+let compareList = [];
+let currentModal = null;
+let swipeIdx = 0;
+
+function makeCard(p, wide=false) {
+  const tagHtml = (p.tags||[]).map(t => {
+    const cls = t==='featured'?'tag-featured':t==='new'?'tag-new':t==='hot'?'tag-hot':'tag-premium';
+    return `<span class="prop-tag ${cls}">${t}</span>`;
+  }).join('');
+  return `
+  <div class="prop-card ${wide?'prop-card-wide':''}" onclick="openModal(${p.id})">
+    <div class="prop-img">
+      <div class="prop-img-bg" style="background:${p.bg}"></div>
+      <div class="prop-img-emoji">${p.emoji}</div>
+    </div>
+    <div class="prop-overlay">
+      <div></div>
+      <div class="prop-overlay-actions">
+        <button class="prop-overlay-btn save" onclick="event.stopPropagation();saveProp(${p.id})">♥</button>
+        <button class="prop-overlay-btn info" onclick="event.stopPropagation();openModal(${p.id})">ℹ</button>
+      </div>
+    </div>
+    <div class="prop-tags">${tagHtml}</div>
+    <div class="prop-body">
+      <div class="prop-name">${p.title}</div>
+      <div class="prop-loc">📍 ${p.loc}</div>
+      <div class="prop-price">${p.price} <span class="prop-price-sub">${p.priceSub}</span></div>
+      <div class="prop-amenities">${(p.amenities||[]).slice(0,3).map(a=>`<span class="prop-amenity">${a}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+
+function renderRows() {
+  document.getElementById('topPicksRow').innerHTML = PROPS.slice(0,5).map((p,i) => makeCard(p, i===0)).join('');
+  document.getElementById('underBudgetRow').innerHTML = PROPS.filter(p=>p.type==='rent').map(p=>makeCard(p)).join('');
+  document.getElementById('yieldRow').innerHTML = [...PROPS].sort((a,b)=>b.sqft-a.sqft).slice(0,5).map(p=>makeCard(p)).join('');
+  document.getElementById('newListingsRow').innerHTML = PROPS.filter(p=>p.tags.includes('new')||p.tags.includes('hot')).concat(PROPS.slice(0,3)).map(p=>makeCard(p)).join('');
+}
+
+function openModal(id) {
+  const p = PROPS.find(x=>x.id===id);
+  if(!p) return;
+  currentModal = p;
+  document.getElementById('modalHeroBg').style.background = p.bg;
+  document.getElementById('modalHeroEmoji').textContent = p.emoji;
+  document.getElementById('modalTitle').textContent = p.title;
+  document.getElementById('modalLoc').textContent = '📍 ' + p.loc;
+  document.getElementById('modalPrice').textContent = p.price;
+  document.getElementById('modalPriceDetail').textContent = p.priceSub;
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalSpecs').innerHTML = p.specs.map(s=>`<div class="modal-spec-item"><div class="modal-spec-icon">${s.icon}</div><div class="modal-spec-value">${s.val}</div><div class="modal-spec-label">${s.lbl}</div></div>`).join('');
+  document.getElementById('modalAmenities').innerHTML = (p.amenities||[]).map(a=>`<div class="modal-amenity">${a}</div>`).join('');
+  document.getElementById('tab-overview').classList.add('active');
+  document.getElementById('tab-amenities').classList.remove('active');
+  document.getElementById('tab-location').classList.remove('active');
+  document.querySelectorAll('.modal-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) { if(e.target===document.getElementById('modalOverlay')) closeModalDirect(); }
+function closeModalDirect() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+
+function switchTab(btn, tab) {
+  document.querySelectorAll('.modal-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.modal-tab-content').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+
+function saveFromModal() {
+  if(currentModal) { saveProp(currentModal.id); }
+}
+
+function saveProp(id) {
+  const p = PROPS.find(x=>x.id===id);
+  if(savedProps.has(id)) { savedProps.delete(id); showToast('Removed from saved', '✕'); }
+  else { savedProps.add(id); showToast(`♥ ${p.title} saved!`); }
+  updateSavedBadge();
+}
+
+function updateSavedBadge() {
+  const badge = document.getElementById('savedBadge');
+  const count = document.getElementById('savedCount');
+  if(savedProps.size > 0) { badge.style.display='flex'; count.textContent=savedProps.size; }
+  else { badge.style.display='none'; }
+}
+
+function addToCompare() {
+  if(currentModal && compareList.length < 3 && !compareList.includes(currentModal.id)) {
+    compareList.push(currentModal.id);
+    updateCompareBar();
+    showToast(`Added to compare (${compareList.length}/3)`);
+  }
+}
+
+function updateCompareBar() {
+  const bar = document.getElementById('compareBar');
+  const slots = document.getElementById('compareSlots');
+  bar.classList.toggle('visible', compareList.length > 0);
+  slots.innerHTML = [0,1,2].map(i => compareList[i] ? `<div class="compare-slot filled">${PROPS.find(p=>p.id===compareList[i]).title.split(' ')[0]}</div>` : `<div class="compare-slot">+ Add</div>`).join('');
+}
+
+// SWIPE
+function openSwipe() {
+  swipeIdx = 0;
+  buildSwipeCards();
+  document.getElementById('swipeOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeSwipe() { document.getElementById('swipeOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+
+function buildSwipeCards() {
+  const stack = document.getElementById('swipeStack');
+  const props = [...PROPS].sort(()=>Math.random()-0.5).slice(0,6);
+  stack.innerHTML = props.reverse().map((p,i) => `
+  <div class="swipe-card" data-id="${p.id}" style="z-index:${i}">
+    <div class="swipe-card-img">
+      <div class="swipe-card-img-bg" style="background:${p.bg}"></div>
+      <div class="swipe-card-img-emoji">${p.emoji}</div>
+    </div>
+    <div class="swipe-feedback like">SAVE ♥</div>
+    <div class="swipe-feedback pass">PASS ✕</div>
+    <div class="swipe-card-body">
+      <div class="swipe-card-name">${p.title}</div>
+      <div class="swipe-card-loc">📍 ${p.loc}</div>
+      <div class="swipe-card-price">${p.price}</div>
+      <div class="swipe-card-specs">
+        <span class="swipe-card-spec">🛏 ${p.bhk} BHK</span>
+        <span class="swipe-card-spec">📐 ${p.sqft} sq.ft</span>
+      </div>
+    </div>
+  </div>`).join('');
+  
+  updateSwipeCount();
+  initSwipeDrag();
+}
+
+function updateSwipeCount() {
+  const cards = document.querySelectorAll('.swipe-card');
+  document.getElementById('swipeCount').textContent = `${swipeIdx+1} / ${cards.length}`;
+}
+
+function doSwipe(dir) {
+  const cards = document.querySelectorAll('.swipe-card');
+  if(!cards.length) return;
+  const top = cards[cards.length-1];
+  const id = parseInt(top.dataset.id);
+  
+  top.style.transition = 'transform 0.4s cubic-bezier(.25,.46,.45,.94), opacity 0.4s';
+  top.style.transform = dir==='like' ? 'translateX(140%) rotate(20deg)' : 'translateX(-140%) rotate(-20deg)';
+  top.style.opacity = '0';
+  
+  if(dir==='like') { saveProp(id); showToast('♥ Saved!'); }
+  else { showToast('Passed', '→'); }
+  
+  setTimeout(()=>{ top.remove(); swipeIdx++; updateSwipeCount(); }, 350);
+}
+
+function openSwipeInfo() { const cards = document.querySelectorAll('.swipe-card'); if(cards.length) openModal(parseInt(cards[cards.length-1].dataset.id)); }
+
+function initSwipeDrag() {
+  const stack = document.getElementById('swipeStack');
+  let startX, startY, isDragging = false, card = null;
+  
+  function getTop() { const c = stack.querySelectorAll('.swipe-card'); return c[c.length-1]; }
+  
+  stack.addEventListener('mousedown', e => {
+    card = getTop(); if(!card) return;
+    startX = e.clientX; startY = e.clientY; isDragging = true;
+    card.classList.add('is-dragging'); card.style.transition = 'none';
+  });
+  
+  document.addEventListener('mousemove', e => {
+    if(!isDragging || !card) return;
+    const dx = e.clientX - startX;
+    const rot = dx * 0.08;
+    card.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
+    const like = card.querySelector('.swipe-feedback.like');
+    const pass = card.querySelector('.swipe-feedback.pass');
+    if(dx > 30) { like.style.opacity = Math.min((dx-30)/80, 1); pass.style.opacity = 0; }
+    else if(dx < -30) { pass.style.opacity = Math.min((-dx-30)/80, 1); like.style.opacity = 0; }
+    else { like.style.opacity = 0; pass.style.opacity = 0; }
+  });
+  
+  document.addEventListener('mouseup', e => {
+    if(!isDragging || !card) return;
+    isDragging = false; card.classList.remove('is-dragging');
+    const dx = e.clientX - startX;
+    card.querySelector('.swipe-feedback.like').style.opacity = 0;
+    card.querySelector('.swipe-feedback.pass').style.opacity = 0;
+    if(dx > 80) doSwipe('like');
+    else if(dx < -80) doSwipe('pass');
+    else { card.style.transition = 'transform 0.3s'; card.style.transform = ''; }
+    card = null;
+  });
+}
+
+function aiSearch() {
+  const q = document.getElementById('aiInput').value.trim();
+  if(!q) return;
+  showToast(`🤖 Searching: "${q}"...`);
+  setTimeout(()=>showToast('✨ Found 12 matching properties!'), 1500);
+  document.getElementById('aiInput').value = '';
+}
+
+function showToast(msg, icon='✓') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastIcon').textContent = icon;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+function setNav(el, page) { document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active')); el.classList.add('active'); }
+function scrollToRows() { document.getElementById('topPicks').scrollIntoView({behavior:'smooth'}); }
+function toggleFilter(el, name) { el.classList.toggle('filter-active'); }
+
+// Scroll nav
+window.addEventListener('scroll', ()=>{ document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60); });
+
+// Search keydown
+document.getElementById('aiInput').addEventListener('keydown', e=>{ if(e.key==='Enter') aiSearch(); });
+
+renderRows();
+</script>
+</body>
+</html>
