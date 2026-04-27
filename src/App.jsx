@@ -4,7 +4,7 @@ import {
   Home, Compass, Key, Building, Heart, GitCompare, MessageSquare, 
   MoreHorizontal, Search, Bell, SlidersHorizontal, PlayCircle, Map,
   Bed, Square, MapPin, X, Sparkles, Check, Car, Bath, Maximize, Layers,
-  Trash2, XCircle, Mic, Send
+  Trash2, XCircle, Mic, Send, ArrowLeft
 } from 'lucide-react';
 
 const PROPS = [
@@ -122,7 +122,7 @@ function Sidebar({ activeTab, setActiveTab, savedCount }) {
 function TopHeader() {
   return (
     <div className="top-header">
-      <div className="mobile-brand" style={{ display: 'none' }}>
+      <div className="mobile-brand">
         <div className="brand-icon">
           <svg viewBox="0 0 28 28" width="24" height="24" fill="none">
             <circle cx="14" cy="14" r="13" stroke="currentColor" strokeWidth="1.5"/>
@@ -152,13 +152,15 @@ function TopHeader() {
 function PropertyCard({ p, wide = false, onClick, yieldBadge = false, isSaved = false, onSaveToggle }) {
   return (
     <motion.div 
-      layoutId={`card-container-${p.id}`}
       className={`prop-card ${wide ? 'prop-card-wide' : ''}`}
       whileHover={{ y: -6 }}
       onClick={onClick}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <div className="prop-img-wrapper">
-        <motion.img layoutId={`card-img-${p.id}`} src={p.img} className="prop-img" alt={p.title} />
+        <img src={p.img} className="prop-img" alt={p.title} loading="lazy" />
         <div className="prop-img-overlay"></div>
         <div className="prop-tags">
           {yieldBadge && p.yield && (
@@ -175,7 +177,7 @@ function PropertyCard({ p, wide = false, onClick, yieldBadge = false, isSaved = 
         </div>
       </div>
       <div className="prop-details">
-        <motion.div layoutId={`card-title-${p.id}`} className="prop-title">{p.title}</motion.div>
+        <motion.div layoutId={`card-title-${p.id}`} className="prop-title" transition={{ duration: 0.2 }}>{p.title}</motion.div>
         <div className="prop-loc">{p.loc}</div>
         <div className="prop-price-row">
           <div className="prop-price">{p.price} <span>{p.priceSub}</span></div>
@@ -190,8 +192,8 @@ function PropertyCard({ p, wide = false, onClick, yieldBadge = false, isSaved = 
 
 function PropertyRow({ title, properties, onSelect, yieldBadge = false, savedIds, onSaveToggle }) {
   return (
-    <div style={{ marginBottom: '48px' }}>
-      <div className="row-header">
+    <div style={{ marginBottom: '40px' }}>
+      <div className="row-header" style={{ padding: '0 4px' }}>
         <div className="row-title">{title}</div>
         <button className="row-view-all">View all</button>
       </div>
@@ -208,7 +210,12 @@ function PropertyRow({ title, properties, onSelect, yieldBadge = false, savedIds
 
 function HomePage({ onSwipeOpen, onSelect, savedIds, onSaveToggle }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="hero-banner">
         <img className="hero-img" src="https://images.unsplash.com/photo-1613490908575-9e6e165b4c1d?auto=format&fit=crop&w=1600&q=80" alt="Luxury Home" />
         <div className="hero-overlay"></div>
@@ -577,53 +584,76 @@ function DetailPage({ property, onBack }) {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: 100 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 100 }}
-      transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-      style={{ position: 'absolute', inset: 0, background: 'var(--bg)', zIndex: 100, minHeight: '100vh', paddingBottom: '100px', overflowY: 'auto' }}
+      initial={{ opacity: 0, x: 20 }} 
+      animate={{ opacity: 1, x: 0 }} 
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      style={{ 
+        position: 'fixed', 
+        inset: 0, 
+        background: 'var(--bg)', 
+        zIndex: 1000, 
+        overflowY: 'auto',
+        willChange: 'transform, opacity'
+      }}
     >
-      <div style={{ position: 'fixed', top: 24, left: 32, zIndex: 110 }}>
-        <button className="swipe-close" onClick={onBack} style={{ width: '44px', height: '44px', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)', color: 'white', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.1)' }}>
-          ←
+      <div style={{ position: 'fixed', top: 16, left: 16, zIndex: 1110 }}>
+        <button className="swipe-close" onClick={onBack} style={{ width: '40px', height: '40px', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', color: 'white', borderRadius: '50%', border: '1px solid rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ArrowLeft size={20} />
         </button>
       </div>
       
-      <div style={{ height: '55vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ height: '45vh', position: 'relative' }}>
         <img src={property.img} alt={property.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg) 0%, transparent 40%)' }}></div>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, var(--bg) 0%, transparent 60%)' }}></div>
       </div>
       
-      <div style={{ padding: '0 48px', maxWidth: '1200px', margin: '-60px auto 0', position: 'relative', zIndex: 10 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '48px', background: 'var(--bg2)', padding: '32px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-          <div>
-            <div style={{ display: 'inline-block', padding: '4px 12px', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', borderRadius: '8px', fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '16px' }}>{property.type === 'rent' ? 'For Rent' : 'For Sale'}</div>
-            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '48px', marginBottom: '12px', lineHeight: 1.1 }}>{property.title}</h1>
-            <div style={{ color: 'var(--text2)', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <MapPin size={18} /> {property.loc}
+      <div className="detail-content" style={{ padding: '0 24px', maxWidth: '1200px', margin: '-40px auto 0', position: 'relative', zIndex: 10 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', background: 'var(--bg2)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <div style={{ display: 'inline-block', padding: '4px 10px', background: 'rgba(201,168,76,0.15)', color: 'var(--gold)', borderRadius: '6px', fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', marginBottom: '12px' }}>{property.type === 'rent' ? 'For Rent' : 'For Sale'}</div>
+              <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: '32px', marginBottom: '8px', lineHeight: 1.1 }}>{property.title}</h1>
+              <div style={{ color: 'var(--text2)', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <MapPin size={16} /> {property.loc}
+              </div>
             </div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '42px', color: 'var(--gold)', fontWeight: 600, fontFamily: "'Cormorant Garamond', serif" }}>{property.price}</div>
-            <div style={{ color: 'var(--text2)', fontSize: '15px', marginTop: '4px' }}>{property.priceSub}</div>
+          <div style={{ borderTop: '1px solid var(--border2)', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: '28px', color: 'var(--gold)', fontWeight: 600, fontFamily: "'Cormorant Garamond', serif" }}>{property.price}</div>
+              <div style={{ color: 'var(--text2)', fontSize: '13px' }}>{property.priceSub}</div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.bhk}</div>
+                <div style={{ color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase' }}>BHK</div>
+              </div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: 'var(--text)', fontWeight: 600 }}>{property.sqft}</div>
+                <div style={{ color: 'var(--text3)', fontSize: '10px', textTransform: 'uppercase' }}>Sq.Ft</div>
+              </div>
+            </div>
           </div>
         </div>
         
-        <div style={{ display: 'flex', gap: '48px' }}>
-          <div style={{ flex: 2 }}>
-            <h3 style={{ fontSize: '20px', color: 'var(--text)', marginBottom: '20px', borderBottom: '1px solid var(--border2)', paddingBottom: '12px' }}>Property Overview</h3>
-            <p style={{ color: 'var(--text2)', lineHeight: 1.8, marginBottom: '40px', fontSize: '15px' }}>
+        <div className="detail-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '32px' }}>
+          <div>
+            <h3 style={{ fontSize: '18px', color: 'var(--text)', marginBottom: '16px', borderBottom: '1px solid var(--border2)', paddingBottom: '8px' }}>Property Overview</h3>
+            <p style={{ color: 'var(--text2)', lineHeight: 1.6, marginBottom: '32px', fontSize: '14px' }}>
               {property.desc} Enjoy high-end fittings, ample natural light, and access to premium society amenities.
             </p>
-            <h3 style={{ fontSize: '20px', color: 'var(--text)', marginBottom: '20px', borderBottom: '1px solid var(--border2)', paddingBottom: '12px' }}>Amenities</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginBottom: '40px' }}>
-              {property.amenities.map(a => <div key={a} style={{ background: 'var(--bg3)', padding: '16px 20px', borderRadius: '12px', fontSize: '14px', border: '1px solid var(--border)' }}>{a}</div>)}
+            <h3 style={{ fontSize: '18px', color: 'var(--text)', marginBottom: '16px', borderBottom: '1px solid var(--border2)', paddingBottom: '8px' }}>Amenities</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
+              {property.amenities.map(a => <div key={a} style={{ background: 'var(--bg3)', padding: '12px 16px', borderRadius: '12px', fontSize: '13px', border: '1px solid var(--border)' }}>{a}</div>)}
             </div>
           </div>
           
-          <div style={{ flex: 1 }}>
-            <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', padding: '32px', borderRadius: '24px', position: 'sticky', top: '100px' }}>
-              <h4 style={{ fontSize: '18px', marginBottom: '24px', textAlign: 'center' }}>Interested in this property?</h4>
-              <button className="btn-primary" style={{ width: '100%', marginBottom: '16px', padding: '18px', borderRadius: '12px' }}>Schedule a Visit</button>
-              <button className="btn-ghost" style={{ width: '100%', justifyContent: 'center', padding: '18px', borderRadius: '12px' }}>Contact Agent</button>
+          <div style={{ paddingBottom: '40px' }}>
+            <div style={{ background: 'var(--bg3)', border: '1px solid var(--border)', padding: '24px', borderRadius: '24px' }}>
+              <h4 style={{ fontSize: '16px', marginBottom: '20px', textAlign: 'center' }}>Interested in this property?</h4>
+              <button className="btn-primary" style={{ width: '100%', marginBottom: '12px', padding: '16px', borderRadius: '12px' }}>Schedule a Visit</button>
+              <button className="btn-ghost" style={{ width: '100%', justifyContent: 'center', padding: '16px', borderRadius: '12px' }}>Contact Agent</button>
             </div>
           </div>
         </div>
@@ -722,7 +752,14 @@ function App() {
         <TopHeader />
         
         <AnimatePresence mode="wait">
-          <motion.div key={activeTab} initial={{opacity: 0, y: 10}} animate={{opacity: 1, y: 0}} exit={{opacity: 0, y: -10}}>
+          <motion.div 
+            key={activeTab} 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: "linear" }}
+            style={{ willChange: 'opacity' }}
+          >
             {renderContent()}
           </motion.div>
         </AnimatePresence>
