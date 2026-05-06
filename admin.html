@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Umbrella Admin - Property Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C97A;
+      --bg: #050505;
+      --bg2: #0A0A0C;
+      --bg3: #121215;
+      --text: #F0EDE8;
+      --text2: #9A9490;
+      --text3: #5A5652;
+      --border: rgba(255,255,255,0.08);
+      --green: #2ECC7A;
+      --red: #E05555;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 40px;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { font-size: 24px; font-weight: 700; color: var(--gold); letter-spacing: 0.05em; }
+    .stats { display: flex; gap: 24px; }
+    .stat { background: var(--bg2); padding: 16px 24px; border-radius: 12px; border: 1px solid var(--border); }
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--gold); }
+    .stat-label { font-size: 12px; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+    .container { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 400px 1fr; gap: 32px; }
+    .form-section { background: var(--bg2); padding: 32px; border-radius: 20px; border: 1px solid var(--border); }
+    .section-title { font-size: 18px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; color: var(--gold); }
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+    .form-textarea { min-height: 100px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .amenities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .amenity-tag {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .amenity-tag:hover { background: rgba(255,255,255,0.05); }
+    .amenity-tag.selected { background: rgba(201,168,76,0.15); border-color: var(--gold); color: var(--gold); }
+    .tags-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag-option {
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tag-option.selected { border-color: var(--gold); color: var(--gold); }
+    .btn-primary {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,0.3); }
+    .btn-secondary {
+      width: 100%;
+      padding: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 12px;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: var(--gold); }
+    .properties-section { background: var(--bg2); border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
+    .properties-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .properties-header h2 { font-size: 18px; font-weight: 600; }
+    .search-box { display: flex; gap: 12px; }
+    .search-box input { width: 200px; }
+    .properties-list { max-height: 600px; overflow-y: auto; }
+    .property-item {
+      display: grid;
+      grid-template-columns: 80px 1fr auto auto;
+      gap: 16px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .property-item:last-child { border-bottom: none; }
+    .property-thumb { width: 80px; height: 60px; border-radius: 8px; object-fit: cover; background: var(--bg3); }
+    .property-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .property-info p { font-size: 12px; color: var(--text2); }
+    .property-price { font-size: 16px; font-weight: 600; color: var(--gold); min-width: 100px; text-align: right; }
+    .property-actions { display: flex; gap: 8px; }
+    .btn-icon { width: 36px; height: 36px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .btn-icon:hover { background: var(--gold); color: #000; }
+    .btn-icon.delete:hover { background: var(--red); color: white; }
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-zone:hover { border-color: var(--gold); }
+    .upload-zone input { display: none; }
+    .image-preview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .image-preview img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--green);
+      color: #000;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(46,204,122,0.3);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text2);
+    }
+    .empty-state svg { margin-bottom: 16px; opacity: 0.5; }
+    @media (max-width: 1024px) {
+      .container { grid-template-columns: 1fr; }
+      .admin-header { flex-direction: column; gap: 24px; align-items: flex-start; }
+      .stats { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <div class="brand">UMBRELLA ADMIN</div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-value" id="totalCount">50</div>
+        <div class="stat-label">Total Properties</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="rentCount">35</div>
+        <div class="stat-label">For Rent</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="buyCount">15</div>
+        <div class="stat-label">For Sale</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="form-section">
+      <div class="section-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        Add New Property
+      </div>
+
+      <form id="propertyForm">
+        <div class="form-group">
+          <label class="form-label">Property Title *</label>
+          <input type="text" class="form-input" id="title" placeholder="e.g., Skyline Residences" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Location *</label>
+            <input type="text" class="form-input" id="loc" placeholder="e.g., Baner, Pune" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type *</label>
+            <select class="form-select" id="type" required>
+              <option value="rent">For Rent</option>
+              <option value="buy">For Sale</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Price *</label>
+            <input type="text" class="form-input" id="price" placeholder="e.g., ₹45 L or ₹30,000" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Price Subtext</label>
+            <input type="text" class="form-input" id="priceSub" placeholder="e.g., 3 BHK · 1680 sq.ft">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">BHK</label>
+            <select class="form-select" id="bhk">
+              <option value="1">1 BHK</option>
+              <option value="2">2 BHK</option>
+              <option value="3">3 BHK</option>
+              <option value="4">4 BHK</option>
+              <option value="4.5">4.5 BHK</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sq. Ft</label>
+            <input type="number" class="form-input" id="sqft" placeholder="e.g., 1200">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tags</label>
+          <div class="tags-grid">
+            <div class="tag-option" data-tag="featured">Featured</div>
+            <div class="tag-option" data-tag="new">New</div>
+            <div class="tag-option" data-tag="premium">Premium</div>
+            <div class="tag-option" data-tag="hot">Hot</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <textarea class="form-textarea" id="desc" placeholder="Property description..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Amenities</label>
+          <div class="amenities-grid">
+            <div class="amenity-tag" data-amenity="Furnished">Furnished</div>
+            <div class="amenity-tag" data-amenity="Parking">Parking</div>
+            <div class="amenity-tag" data-amenity="Security">Security</div>
+            <div class="amenity-tag" data-amenity="Lift">Lift</div>
+            <div class="amenity-tag" data-amenity="Gym">Gym</div>
+            <div class="amenity-tag" data-amenity="Pool">Pool</div>
+            <div class="amenity-tag" data-amenity="Garden">Garden</div>
+            <div class="amenity-tag" data-amenity="CCTV">CCTV</div>
+            <div class="amenity-tag" data-amenity="Power Backup">Power Backup</div>
+            <div class="amenity-tag" data-amenity="Swimming Pool">Swimming Pool</div>
+            <div class="amenity-tag" data-amenity="Clubhouse">Clubhouse</div>
+            <div class="amenity-tag" data-amenity="Fully Furnished">Fully Furnished</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Image URL (for now)</label>
+          <input type="text" class="form-input" id="imgUrl" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <button type="submit" class="btn-primary">Add Property</button>
+        <button type="button" class="btn-secondary" onclick="exportProperties()">Export JSON</button>
+      </form>
+    </div>
+
+    <div class="properties-section">
+      <div class="properties-header">
+        <h2>All Properties</h2>
+        <div class="search-box">
+          <input type="text" class="form-input" placeholder="Search..." id="searchProps">
+        </div>
+      </div>
+      <div class="properties-list" id="propertiesList">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Property added successfully!</div>
+
+  <script>
+    let properties = [];
+    let selectedAmenities = [];
+    let selectedTags = [];
+
+    // Default image for new properties
+    const defaultImage = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80';
+
+    // Load properties from localStorage or use default
+    function loadProperties() {
+      const stored = localStorage.getItem('umbrella_admin_properties');
+      if (stored) {
+        properties = JSON.parse(stored);
+      } else {
+        // Initialize with some sample properties
+        properties = [
+          { id: 1, title: 'Skyline Residences', loc: 'Baner, Pune', price: '₹1.45 Cr', priceSub: '3 BHK · 1680 sq.ft', type: 'buy', bhk: 3, sqft: 1680, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', tags: ['featured'], amenities: ['Furnished', 'Parking', 'Lift'], desc: 'Luxurious property', yield: 4.5, agent: { name: 'Sarah Kapoor', phone: '+91 98765 43210', img: 'https://i.pravatar.cc/100?img=44' }, features: ['Vastu Compliant'], addedDate: '2026-04-15' },
+          { id: 2, title: 'Urban Nest', loc: 'Wakad, Pune', price: '₹22,000', priceSub: '/ mo', type: 'rent', bhk: 2, sqft: 956, img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80', tags: ['new'], amenities: ['Furnished', 'Security'], desc: 'Modern apartment', yield: 6.2, agent: { name: 'Rahul Mehra', phone: '+91 98765 00000', img: 'https://i.pravatar.cc/100?img=12' }, features: ['Balcony'], addedDate: '2026-04-20' }
+        ];
+      }
+    }
+
+    // Amenity tag selection
+    document.querySelectorAll('.amenity-tag').forEach(tag => {
+      tag.addEventListener('click', () => {
+        const amenity = tag.dataset.amenity;
+        if (selectedAmenities.includes(amenity)) {
+          selectedAmenities = selectedAmenities.filter(a => a !== amenity);
+          tag.classList.remove('selected');
+        } else {
+          selectedAmenities.push(amenity);
+          tag.classList.add('selected');
+        }
+      });
+    });
+
+    // Tag selection
+    document.querySelectorAll('.tag-option').forEach(tag => {
+      tag.addEventListener('click', () => {
+        const t = tag.dataset.tag;
+        if (selectedTags.includes(t)) {
+          selectedTags = selectedTags.filter(x => x !== t);
+          tag.classList.remove('selected');
+        } else {
+          selectedTags.push(t);
+          tag.classList.add('selected');
+        }
+      });
+    });
+
+    // Form submit
+    document.getElementById('propertyForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const newProperty = {
+        id: Date.now(),
+        title: document.getElementById('title').value,
+        loc: document.getElementById('loc').value,
+        price: document.getElementById('price').value,
+        priceSub: document.getElementById('priceSub').value,
+        type: document.getElementById('type').value,
+        bhk: parseInt(document.getElementById('bhk').value) || 1,
+        sqft: parseInt(document.getElementById('sqft').value) || 0,
+        img: document.getElementById('imgUrl').value || defaultImage,
+        gallery: [],
+        tags: selectedTags,
+        amenities: selectedAmenities,
+        desc: document.getElementById('desc').value,
+        yield: 5.0,
+        agent: { name: 'Umbrella Agent', phone: '+91 98765 43210', img: 'https://i.pravatar.cc/100?img=33' },
+        features: [],
+        addedDate: new Date().toISOString().split('T')[0]
+      };
+
+      properties.unshift(newProperty);
+      localStorage.setItem('umbrella_admin_properties', JSON.stringify(properties));
+      renderProperties();
+      updateStats();
+      e.target.reset();
+      selectedAmenities = [];
+      selectedTags = [];
+      document.querySelectorAll('.amenity-tag').forEach(t => t.classList.remove('selected'));
+      document.querySelectorAll('.tag-option').forEach(t => t.classList.remove('selected'));
+
+      showToast('Property added successfully!');
+    });
+
+    function renderProperties(filter = '') {
+      const list = document.getElementById('propertiesList');
+      const filtered = properties.filter(p =>
+        p.title.toLowerCase().includes(filter.toLowerCase()) ||
+        p.loc.toLowerCase().includes(filter.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><p>No properties found</p></div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(p => `
+        <div class="property-item">
+          <img src="${p.img}" class="property-thumb" alt="${p.title}" onerror="this.src='https://via.placeholder.com/80x60?text=No+Image'">
+          <div class="property-info">
+            <h3>${p.title}</h3>
+            <p>${p.loc} · ${p.bhk} BHK · ${p.sqft} sq.ft</p>
+          </div>
+          <div class="property-price">${p.price}</div>
+          <div class="property-actions">
+            <button class="btn-icon" onclick="deleteProperty(${p.id})" title="Delete">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateStats() {
+      document.getElementById('totalCount').textContent = properties.length;
+      document.getElementById('rentCount').textContent = properties.filter(p => p.type === 'rent').length;
+      document.getElementById('buyCount').textContent = properties.filter(p => p.type === 'buy').length;
+    }
+
+    function deleteProperty(id) {
+      if (confirm('Delete this property?')) {
+        properties = properties.filter(p => p.id !== id);
+        localStorage.setItem('umbrella_admin_properties', JSON.stringify(properties));
+        renderProperties();
+        updateStats();
+        showToast('Property deleted');
+      }
+    }
+
+    function exportProperties() {
+      const data = {
+        version: '1.0.0',
+        lastUpdated: new Date().toISOString(),
+        properties: properties
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'properties.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('JSON exported!');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    document.getElementById('searchProps').addEventListener('input', (e) => {
+      renderProperties(e.target.value);
+    });
+
+    // Initial load
+    loadProperties();
+    renderProperties();
+    updateStats();
+  </script>
+</body>
+</html>
