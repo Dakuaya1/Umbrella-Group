@@ -1256,12 +1256,18 @@ body {
 }
 
 /* SAVED PAGE */
-.saved-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+.saved-grid, .props-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
 
 @media (max-width: 1024px) {
-  .saved-grid {
+  .saved-grid, .props-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .saved-grid, .props-grid {
+    grid-template-columns: 1fr;
   }
 }
 
